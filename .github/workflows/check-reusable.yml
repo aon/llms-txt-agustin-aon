@@ -1,0 +1,13 @@
+name: Workflow template for check jobs
+
+on:
+  workflow_call:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    name: Code Quality
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ./.github/actions/setup-dependencies
+      - run: node --run check:ci

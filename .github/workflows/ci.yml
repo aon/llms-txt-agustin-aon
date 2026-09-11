@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  ci-for-check:
+    name: Check
+    uses: ./.github/workflows/check-reusable.yml
+
+  ci-for-test:
+    name: Test
+    uses: ./.github/workflows/test-reusable.yml
+
+  ci-success:
+    name: Github Status Check
+    runs-on: ubuntu-latest
+    if: always() && !cancelled()
+    needs: [ci-for-check, ci-for-test]
+    steps:
+      - name: Status
+        run: |
+          if [[ ${{ contains(join(needs.*.result, ','), 'failure') || contains(join(needs.*.result, ','), 'cancelled') }} == "true" ]]; then
+            echo "Intentionally failing to block PR from merging"
+            exit 1
+          fi

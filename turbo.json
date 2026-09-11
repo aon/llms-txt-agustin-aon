@@ -11,6 +11,10 @@
       "cache": false,
       "persistent": true
     },
+    "//#biome": {
+      "cache": false
+    },
+    "//#biome:check": {},
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },

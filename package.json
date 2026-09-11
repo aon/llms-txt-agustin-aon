@@ -10,8 +10,10 @@
     "dev": "turbo run dev",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "check": "biome check --write --error-on-warnings .",
-    "check:ci": "biome check --error-on-warnings ."
+    "check": "turbo run biome typecheck",
+    "check:ci": "turbo run biome:check typecheck",
+    "biome": "biome check --write --error-on-warnings .",
+    "biome:check": "biome check --error-on-warnings ."
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.13",
