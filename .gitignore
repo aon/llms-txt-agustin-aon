@@ -23,3 +23,6 @@ pnpm-debug.log*
 .DS_Store
 *.tsbuildinfo
 coverage/
+
+# next.js generated
+next-env.d.ts
