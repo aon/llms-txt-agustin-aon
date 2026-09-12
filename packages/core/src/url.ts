@@ -46,6 +46,15 @@ export function pagePathFromUrl(input: string | URL) {
   return `${path}${url.search}`;
 }
 
+/** www and the bare domain are one site; a redirect between them is not offsite. */
+export function sameSite(hostA: string, hostB: string) {
+  return bareHost(hostA) === bareHost(hostB);
+}
+
+function bareHost(host: string) {
+  return host.toLowerCase().replace(/^www\./, "");
+}
+
 /** Time-sortable crawl id. */
 export function newCrawlId() {
   return ulid();

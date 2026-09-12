@@ -4,6 +4,7 @@ import {
   newCrawlId,
   normalizeOrigin,
   pagePathFromUrl,
+  sameSite,
 } from "./url.js";
 
 describe("normalizeOrigin", () => {
@@ -83,6 +84,18 @@ describe("pagePathFromUrl", () => {
   it("returns / for an empty path", () => {
     expect(pagePathFromUrl("https://example.com")).toBe("/");
     expect(pagePathFromUrl(new URL("https://example.com?q=1"))).toBe("/?q=1");
+  });
+});
+
+describe("sameSite", () => {
+  it("ignores case and a leading www", () => {
+    expect(sameSite("www.example.com", "EXAMPLE.com")).toBe(true);
+    expect(sameSite("example.com", "example.com")).toBe(true);
+  });
+
+  it("keeps other subdomains and hosts apart", () => {
+    expect(sameSite("docs.example.com", "example.com")).toBe(false);
+    expect(sameSite("example.com", "example.org")).toBe(false);
   });
 });
 
