@@ -40,7 +40,7 @@ export type SnapshotPage = Required<
     | "section"
     | "rank"
     | "depth"
-    | "inFile"
+    | "eligible"
     | "wordCount"
   >
 > &

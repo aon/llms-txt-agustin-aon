@@ -65,10 +65,10 @@ export function buildEnrichmentRequest(
   const sections: string[] = [];
   const pages: EnrichmentRequest["pages"] = [];
   for (const section of snapshot.sections) {
-    const inFile = section.pages.filter((page) => page.inFile);
-    if (inFile.length === 0) continue;
+    const eligible = section.pages.filter((page) => page.eligible);
+    if (eligible.length === 0) continue;
     sections.push(section.name);
-    for (const page of inFile) pages.push(toRequestPage(page, section.name));
+    for (const page of eligible) pages.push(toRequestPage(page, section.name));
   }
   const request: EnrichmentRequest = {
     site: siteOf(snapshot),

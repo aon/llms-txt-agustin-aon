@@ -49,7 +49,7 @@ export interface PageClassification {
   path: string;
   section: string;
   rank: number;
-  inFile: boolean;
+  eligible: boolean;
 }
 
 export interface ClassifyOptions {
@@ -66,7 +66,7 @@ export function classifyPages(
     path: page.path,
     section: sectionOf(page, options.siteName, crowded),
     rank: rankOf(page),
-    inFile: isInFile(page, winners),
+    eligible: isEligible(page, winners),
   }));
   return { pages: classified, sections: orderSections(classified, options) };
 }
@@ -140,7 +140,8 @@ function rankOf(page: ClassifiablePage) {
   return Math.max(1, raw);
 }
 
-function isInFile(
+/** Whether a page may appear in the file at all; where it lands is the selector's call. */
+function isEligible(
   page: ClassifiablePage,
   winners: ReadonlyMap<string, string>,
 ) {

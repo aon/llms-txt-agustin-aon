@@ -183,7 +183,7 @@ export class MemoryStore implements Store {
         depth: item.depth,
         crawlId,
         status: "queued",
-        inFile: false,
+        eligible: false,
         firstSeenAt: now,
         lastSeenAt: now,
       });
@@ -217,7 +217,7 @@ export class MemoryStore implements Store {
     return [...map.values()]
       .filter(
         (page) =>
-          options.inFile === undefined || page.inFile === options.inFile,
+          options.eligible === undefined || page.eligible === options.eligible,
       )
       .sort(byPath)
       .map(clone);

@@ -152,13 +152,13 @@ function printSummary(snapshot: Snapshot, rows: Rows, elapsed: string) {
     `Fetched ${snapshot.stats.fetched}, skipped ${snapshot.stats.skipped}, failed ${snapshot.stats.failed} in ${elapsed}s`,
   );
   out.push(
-    `In file: ${snapshot.pages.filter((page) => page.inFile).length} pages across ${snapshot.sections.length} sections`,
+    `Eligible: ${snapshot.pages.filter((page) => page.eligible).length} pages across ${snapshot.sections.length} sections`,
   );
   out.push("");
   for (const section of snapshot.sections) {
     out.push(`## ${section.name}`);
     for (const page of section.pages) {
-      const marker = page.inFile ? " " : "-";
+      const marker = page.eligible ? " " : "-";
       const thin = page.wordCount < 50 ? " (thin)" : "";
       out.push(
         `${marker} [${String(page.rank).padStart(3)}] ${page.path}  ${page.title}${thin}`,
@@ -178,7 +178,7 @@ function printSummary(snapshot: Snapshot, rows: Rows, elapsed: string) {
     }
     out.push("");
   }
-  const excluded = snapshot.pages.filter((page) => !page.inFile);
+  const excluded = snapshot.pages.filter((page) => !page.eligible);
   if (excluded.length > 0) {
     out.push(
       `Fetched but left out of the file (noindex, duplicate or canonical elsewhere): ${excluded.map((page) => page.path).join(", ")}`,

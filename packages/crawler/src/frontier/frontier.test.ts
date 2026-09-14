@@ -148,7 +148,7 @@ function row(path: string, status: Page["status"]): Page {
     depth: 1,
     crawlId: CRAWL,
     status,
-    inFile: false,
+    eligible: false,
     firstSeenAt: "2026-09-12T00:00:00.000Z",
     lastSeenAt: "2026-09-12T00:00:00.000Z",
   };

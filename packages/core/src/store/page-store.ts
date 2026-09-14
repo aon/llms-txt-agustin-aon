@@ -10,7 +10,7 @@ export interface DiscoveredPage {
 export type PagePatch = Patch<Omit<Page, "url" | "path" | "firstSeenAt">>;
 
 export interface ListPagesOptions {
-  inFile?: boolean;
+  eligible?: boolean;
 }
 
 /**

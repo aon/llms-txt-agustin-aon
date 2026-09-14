@@ -62,7 +62,7 @@ function fill(
     section,
     rank: page.rank ?? index + 1,
     depth: page.depth ?? 1,
-    inFile: page.inFile ?? true,
+    eligible: page.eligible ?? true,
     wordCount: page.wordCount ?? 200,
   };
   if (page.description) filled.description = page.description;

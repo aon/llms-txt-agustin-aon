@@ -77,7 +77,7 @@ describe("crawl: one pass over a whole site", () => {
     const site = await harness();
     await site.run();
     const rows = await site.rows();
-    expect(inFile(rows)).toEqual([
+    expect(eligible(rows)).toEqual([
       "/",
       "/about",
       "/blog",
@@ -303,7 +303,7 @@ describe("crawl: redirects and stale rows", () => {
   it("drops a page that disappeared out of the file", async () => {
     const site = await harness();
     await site.run();
-    expect((await site.store.getPage(FIXTURE_HOST, "/contact"))?.inFile).toBe(
+    expect((await site.store.getPage(FIXTURE_HOST, "/contact"))?.eligible).toBe(
       true,
     );
 
@@ -315,7 +315,7 @@ describe("crawl: redirects and stale rows", () => {
 
     expect(result.snapshot.diff.removed).toBe(1);
     expect(await site.store.getPage(FIXTURE_HOST, "/contact")).toMatchObject({
-      inFile: false,
+      eligible: false,
       crawlId: CRAWL,
     });
   });
@@ -504,8 +504,8 @@ function reasons(rows: readonly Page[]) {
   );
 }
 
-function inFile(rows: readonly Page[]) {
-  return rows.filter((row) => row.inFile).map((row) => row.path);
+function eligible(rows: readonly Page[]) {
+  return rows.filter((row) => row.eligible).map((row) => row.path);
 }
 
 function sectionOf(

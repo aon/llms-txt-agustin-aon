@@ -71,7 +71,7 @@ function split(
   const sections: Group[] = [];
   for (const section of snapshot.sections) {
     const pages: SnapshotPage[] = [];
-    const candidates = section.pages.filter((page) => page.inFile);
+    const candidates = section.pages.filter((page) => page.eligible);
     const reserved =
       section.name.toLowerCase() === OPTIONAL_SECTION.toLowerCase();
     for (const page of candidates.sort(byRank)) {
@@ -138,7 +138,7 @@ function linkBuilder(snapshot: CrawlSnapshot, limits: RenderLimits) {
 function boilerplateNotes(snapshot: CrawlSnapshot, limits: RenderLimits) {
   const counts = new Map<string, number>();
   for (const page of snapshot.pages) {
-    if (!page.inFile || !page.description) continue;
+    if (!page.eligible || !page.description) continue;
     const description = collapse(page.description);
     counts.set(description, (counts.get(description) ?? 0) + 1);
   }

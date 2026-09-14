@@ -67,7 +67,7 @@ function pages(host: string, titles: ReadonlyArray<[string, string]>) {
       depth: path === "/" ? 0 : 1,
       crawlId: "01TEST",
       status: "fetched",
-      inFile: true,
+      eligible: true,
       firstSeenAt: "2026-09-12T09:00:00.000Z",
       lastSeenAt: "2026-09-12T10:00:00.000Z",
     };

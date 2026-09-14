@@ -33,7 +33,7 @@ export interface BuildSnapshotInput {
   landingText?: string;
 }
 
-/** Everything here is derived: the crawl decided section, rank and inFile. */
+/** Everything here is derived: the crawl decided section, rank and eligible. */
 export function buildSnapshot(input: BuildSnapshotInput) {
   const fetched = input.pages.filter((page) => page.status === "fetched");
   const byRank = [...fetched].sort(compareRank).map(toSnapshotPage);
@@ -132,7 +132,7 @@ function toSnapshotPage(page: Page) {
     section: page.section ?? "",
     rank: page.rank ?? 0,
     depth: page.depth,
-    inFile: page.inFile,
+    eligible: page.eligible,
     wordCount: page.wordCount ?? 0,
   };
   if (page.description) snapshotPage.description = page.description;

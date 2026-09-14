@@ -92,33 +92,33 @@ describe("classifyPages: rank", () => {
   });
 });
 
-describe("classifyPages: inFile", () => {
+describe("classifyPages: eligible", () => {
   it("includes a plain fetched page", () => {
-    expect(inFileOf(page({ path: "/a", depth: 1 }))).toBe(true);
+    expect(eligibleOf(page({ path: "/a", depth: 1 }))).toBe(true);
   });
 
   it("excludes pages that were never fetched", () => {
-    expect(inFileOf(page({ path: "/a", depth: 1, status: "failed" }))).toBe(
+    expect(eligibleOf(page({ path: "/a", depth: 1, status: "failed" }))).toBe(
       false,
     );
-    expect(inFileOf(page({ path: "/a", depth: 1, status: "skipped" }))).toBe(
+    expect(eligibleOf(page({ path: "/a", depth: 1, status: "skipped" }))).toBe(
       false,
     );
-    expect(inFileOf(page({ path: "/a", depth: 1, status: "queued" }))).toBe(
+    expect(eligibleOf(page({ path: "/a", depth: 1, status: "queued" }))).toBe(
       false,
     );
   });
 
   it("excludes noindex and disallowed pages", () => {
-    expect(inFileOf(page({ path: "/a", depth: 1, noindex: true }))).toBe(false);
-    expect(inFileOf(page({ path: "/a", depth: 1, allowed: false }))).toBe(
+    expect(eligibleOf(page({ path: "/a", depth: 1, noindex: true }))).toBe(false);
+    expect(eligibleOf(page({ path: "/a", depth: 1, allowed: false }))).toBe(
       false,
     );
   });
 
   it("excludes a page whose canonical names another path of the site", () => {
     expect(
-      inFileOf(
+      eligibleOf(
         page({
           path: "/a?x=1",
           depth: 1,
@@ -127,12 +127,12 @@ describe("classifyPages: inFile", () => {
       ),
     ).toBe(false);
     expect(
-      inFileOf(
+      eligibleOf(
         page({ path: "/a", depth: 1, canonicalUrl: "https://example.com/a" }),
       ),
     ).toBe(true);
     expect(
-      inFileOf(
+      eligibleOf(
         page({ path: "/a", depth: 1, canonicalUrl: "https://other.example/a" }),
       ),
     ).toBe(true);
@@ -140,12 +140,12 @@ describe("classifyPages: inFile", () => {
 
   it("reads the canonical through the same normalization as links", () => {
     expect(
-      inFileOf(
+      eligibleOf(
         page({ path: "/a", depth: 1, canonicalUrl: "https://example.com/a/" }),
       ),
     ).toBe(true);
     expect(
-      inFileOf(
+      eligibleOf(
         page({
           path: "/a",
           depth: 1,
@@ -164,7 +164,7 @@ describe("classifyPages: inFile", () => {
       ],
       SITE,
     );
-    expect(pages.map((p) => [p.path, p.inFile])).toEqual([
+    expect(pages.map((p) => [p.path, p.eligible])).toEqual([
       ["/about-us-copy", false],
       ["/about", true],
       ["/other", true],
@@ -179,7 +179,7 @@ describe("classifyPages: inFile", () => {
       ],
       SITE,
     );
-    expect(pages.map((p) => p.inFile)).toEqual([false, true]);
+    expect(pages.map((p) => p.eligible)).toEqual([false, true]);
   });
 });
 
@@ -225,6 +225,6 @@ function rankOf(item: ClassifiablePage) {
   return classifyOne(item).rank;
 }
 
-function inFileOf(item: ClassifiablePage) {
-  return classifyOne(item).inFile;
+function eligibleOf(item: ClassifiablePage) {
+  return classifyOne(item).eligible;
 }

@@ -186,14 +186,14 @@ export function describeStoreContract(factory: () => Promise<Store>) {
       expect(await store.listPagesByCrawl("01A")).toEqual([]);
     });
 
-    it("filters listPages by inFile", async () => {
+    it("filters listPages by eligible", async () => {
       await store.upsertQueuedPages(HOST, "01A", [
         { url: `https://${HOST}/a`, path: "/a", depth: 1 },
         { url: `https://${HOST}/b`, path: "/b", depth: 1 },
       ]);
-      await store.updatePage(HOST, "/a", { status: "fetched", inFile: true });
+      await store.updatePage(HOST, "/a", { status: "fetched", eligible: true });
       expect(
-        (await store.listPages(HOST, { inFile: true })).map((p) => p.path),
+        (await store.listPages(HOST, { eligible: true })).map((p) => p.path),
       ).toEqual(["/a"]);
       expect((await store.listPages(HOST)).map((p) => p.path)).toEqual([
         "/a",

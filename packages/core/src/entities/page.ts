@@ -16,7 +16,7 @@ export interface Page {
   section?: string;
   rank?: number;
   /** False for duplicates, noindex and disallowed pages. */
-  inFile: boolean;
+  eligible: boolean;
   /** Words in the extracted main text, set when the page was fetched. */
   wordCount?: number;
   /** The page asked not to be indexed, by meta robots or X-Robots-Tag. */

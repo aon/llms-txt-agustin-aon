@@ -18,7 +18,7 @@
           "section": "Acme",
           "rank": 0,
           "depth": 0,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 340,
           "description": "Acme builds small tools that do one job and then stay out of the way of the people using them."
         },
@@ -29,7 +29,7 @@
           "section": "Acme",
           "rank": 12,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 420,
           "description": "Who builds Acme, how the company started and where it is going next."
         },
@@ -40,7 +40,7 @@
           "section": "Acme",
           "rank": 14,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 260,
           "description": "What every plan costs, what it includes and when a bigger plan pays off."
         },
@@ -51,7 +51,7 @@
           "section": "Acme",
           "rank": 16,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 310,
           "description": "Open roles on the engineering, design and support teams, with how we hire."
         },
@@ -62,7 +62,7 @@
           "section": "Acme",
           "rank": 17,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 180,
           "description": "We use cookies to make this site work, so please accept them before reading on."
         },
@@ -73,7 +73,7 @@
           "section": "Acme",
           "rank": 19,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 150
         },
         {
@@ -83,7 +83,7 @@
           "section": "Acme",
           "rank": 21,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 28,
           "description": "Every way to reach the team, by mail, by post or in person."
         },
@@ -94,7 +94,7 @@
           "section": "Acme",
           "rank": 24,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 900,
           "description": "How Acme collects, stores and deletes the personal data of the people who use it."
         },
@@ -105,7 +105,7 @@
           "section": "Acme",
           "rank": 25,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 1100,
           "description": "The contract between Acme and anyone who signs up for one of the plans."
         },
@@ -116,7 +116,7 @@
           "section": "Acme",
           "rank": 26,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 40,
           "description": "Sign in to the Acme dashboard with an email address and a password."
         },
@@ -127,7 +127,7 @@
           "section": "Acme",
           "rank": 30,
           "depth": 1,
-          "inFile": false,
+          "eligible": false,
           "wordCount": 200,
           "description": "An internal page the crawler fetched but left out of the file."
         }
@@ -143,7 +143,7 @@
           "section": "Docs",
           "rank": 5,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 220,
           "description": "Everything you need to run Acme, from the first install to the last endpoint."
         },
@@ -154,7 +154,7 @@
           "section": "Docs",
           "rank": 8,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 640,
           "description": "Install Acme, point it at a site and read the file it writes, in about five minutes."
         },
@@ -165,7 +165,7 @@
           "section": "Docs",
           "rank": 9,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 380,
           "description": "Install Acme with npm, with Docker or from source, on macOS, Linux and Windows."
         },
@@ -176,7 +176,7 @@
           "section": "Docs",
           "rank": 10,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 720,
           "description": "Every command the CLI understands, with its flags, its defaults and an example of each."
         },
@@ -187,7 +187,7 @@
           "section": "Docs",
           "rank": 11,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 980,
           "description": "Every endpoint the service exposes, with the parameters it takes, the shape of what it returns, the errors it can raise and the rate limits that apply to each one of them, written out in full."
         },
@@ -198,7 +198,7 @@
           "section": "Docs",
           "rank": 15,
           "depth": 3,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 500,
           "description": "The Acme HTTP API and every setting behind it, end to end."
         },
@@ -209,7 +209,7 @@
           "section": "Docs",
           "rank": 15,
           "depth": 3,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 540,
           "description": "The Acme HTTP API and every setting behind it, end to end."
         },
@@ -220,7 +220,7 @@
           "section": "Docs",
           "rank": 18,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 460,
           "description": "The Acme HTTP API and every setting behind it, end to end."
         },
@@ -231,7 +231,7 @@
           "section": "Docs",
           "rank": 20,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 300,
           "description": "FAQ"
         },
@@ -242,7 +242,7 @@
           "section": "Docs",
           "rank": 22,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 34,
           "description": "What to do when a crawl stops early or writes an empty file."
         },
@@ -253,7 +253,7 @@
           "section": "Docs",
           "rank": 23,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 120,
           "description": "Search every page of the documentation from one box."
         },
@@ -264,7 +264,7 @@
           "section": "Docs",
           "rank": 28,
           "depth": 2,
-          "inFile": false,
+          "eligible": false,
           "wordCount": 380,
           "description": "A copy of the install page under a second path."
         }
@@ -280,7 +280,7 @@
           "section": "Blog",
           "rank": 27,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 210,
           "description": "Notes about what changed in Acme and why it changed."
         },
@@ -291,7 +291,7 @@
           "section": "Blog",
           "rank": 29,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 520,
           "description": "The first post, written the week the project started."
         },
@@ -302,7 +302,7 @@
           "section": "Blog",
           "rank": 31,
           "depth": 2,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 880,
           "description": "What is new in the second version and what it took to get there."
         },
@@ -313,7 +313,7 @@
           "section": "Blog",
           "rank": 33,
           "depth": 3,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 190,
           "description": "Older posts from the Acme blog."
         },
@@ -324,7 +324,7 @@
           "section": "Blog",
           "rank": 34,
           "depth": 3,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 160,
           "description": "Every post tagged release."
         }
@@ -340,7 +340,7 @@
           "section": "Changelog",
           "rank": 32,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 640,
           "description": "Every released version of Acme, newest first, with what it changed."
         }
@@ -355,7 +355,7 @@
       "section": "Acme",
       "rank": 0,
       "depth": 0,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 340,
       "description": "Acme builds small tools that do one job and then stay out of the way of the people using them."
     },
@@ -366,7 +366,7 @@
       "section": "Acme",
       "rank": 12,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 420,
       "description": "Who builds Acme, how the company started and where it is going next."
     },
@@ -377,7 +377,7 @@
       "section": "Acme",
       "rank": 14,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 260,
       "description": "What every plan costs, what it includes and when a bigger plan pays off."
     },
@@ -388,7 +388,7 @@
       "section": "Acme",
       "rank": 16,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 310,
       "description": "Open roles on the engineering, design and support teams, with how we hire."
     },
@@ -399,7 +399,7 @@
       "section": "Acme",
       "rank": 17,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 180,
       "description": "We use cookies to make this site work, so please accept them before reading on."
     },
@@ -410,7 +410,7 @@
       "section": "Acme",
       "rank": 19,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 150
     },
     {
@@ -420,7 +420,7 @@
       "section": "Acme",
       "rank": 21,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 28,
       "description": "Every way to reach the team, by mail, by post or in person."
     },
@@ -431,7 +431,7 @@
       "section": "Acme",
       "rank": 24,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 900,
       "description": "How Acme collects, stores and deletes the personal data of the people who use it."
     },
@@ -442,7 +442,7 @@
       "section": "Acme",
       "rank": 25,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 1100,
       "description": "The contract between Acme and anyone who signs up for one of the plans."
     },
@@ -453,7 +453,7 @@
       "section": "Acme",
       "rank": 26,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 40,
       "description": "Sign in to the Acme dashboard with an email address and a password."
     },
@@ -464,7 +464,7 @@
       "section": "Acme",
       "rank": 30,
       "depth": 1,
-      "inFile": false,
+      "eligible": false,
       "wordCount": 200,
       "description": "An internal page the crawler fetched but left out of the file."
     },
@@ -475,7 +475,7 @@
       "section": "Docs",
       "rank": 5,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 220,
       "description": "Everything you need to run Acme, from the first install to the last endpoint."
     },
@@ -486,7 +486,7 @@
       "section": "Docs",
       "rank": 8,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 640,
       "description": "Install Acme, point it at a site and read the file it writes, in about five minutes."
     },
@@ -497,7 +497,7 @@
       "section": "Docs",
       "rank": 9,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 380,
       "description": "Install Acme with npm, with Docker or from source, on macOS, Linux and Windows."
     },
@@ -508,7 +508,7 @@
       "section": "Docs",
       "rank": 10,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 720,
       "description": "Every command the CLI understands, with its flags, its defaults and an example of each."
     },
@@ -519,7 +519,7 @@
       "section": "Docs",
       "rank": 11,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 980,
       "description": "Every endpoint the service exposes, with the parameters it takes, the shape of what it returns, the errors it can raise and the rate limits that apply to each one of them, written out in full."
     },
@@ -530,7 +530,7 @@
       "section": "Docs",
       "rank": 15,
       "depth": 3,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 500,
       "description": "The Acme HTTP API and every setting behind it, end to end."
     },
@@ -541,7 +541,7 @@
       "section": "Docs",
       "rank": 15,
       "depth": 3,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 540,
       "description": "The Acme HTTP API and every setting behind it, end to end."
     },
@@ -552,7 +552,7 @@
       "section": "Docs",
       "rank": 18,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 460,
       "description": "The Acme HTTP API and every setting behind it, end to end."
     },
@@ -563,7 +563,7 @@
       "section": "Docs",
       "rank": 20,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 300,
       "description": "FAQ"
     },
@@ -574,7 +574,7 @@
       "section": "Docs",
       "rank": 22,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 34,
       "description": "What to do when a crawl stops early or writes an empty file."
     },
@@ -585,7 +585,7 @@
       "section": "Docs",
       "rank": 23,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 120,
       "description": "Search every page of the documentation from one box."
     },
@@ -596,7 +596,7 @@
       "section": "Docs",
       "rank": 28,
       "depth": 2,
-      "inFile": false,
+      "eligible": false,
       "wordCount": 380,
       "description": "A copy of the install page under a second path."
     },
@@ -607,7 +607,7 @@
       "section": "Blog",
       "rank": 27,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 210,
       "description": "Notes about what changed in Acme and why it changed."
     },
@@ -618,7 +618,7 @@
       "section": "Blog",
       "rank": 29,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 520,
       "description": "The first post, written the week the project started."
     },
@@ -629,7 +629,7 @@
       "section": "Blog",
       "rank": 31,
       "depth": 2,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 880,
       "description": "What is new in the second version and what it took to get there."
     },
@@ -640,7 +640,7 @@
       "section": "Blog",
       "rank": 33,
       "depth": 3,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 190,
       "description": "Older posts from the Acme blog."
     },
@@ -651,7 +651,7 @@
       "section": "Blog",
       "rank": 34,
       "depth": 3,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 160,
       "description": "Every post tagged release."
     },
@@ -662,7 +662,7 @@
       "section": "Changelog",
       "rank": 32,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 640,
       "description": "Every released version of Acme, newest first, with what it changed."
     }

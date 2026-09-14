@@ -379,7 +379,7 @@ async function markSkipped(
   const patch: PagePatch = {
     status: "skipped",
     skipReason: reason,
-    inFile: false,
+    eligible: false,
     lastSeenAt: context.deps.now().toISOString(),
   };
   if (status !== undefined) patch.httpStatus = status;
@@ -393,7 +393,7 @@ async function markFailed(
 ) {
   const patch: PagePatch = {
     status: "failed",
-    inFile: false,
+    eligible: false,
     lastSeenAt: context.deps.now().toISOString(),
   };
   if (status !== undefined) patch.httpStatus = status;
@@ -434,7 +434,7 @@ async function classify(context: CrawlContext) {
       await store.updatePage(context.host, row.path, {
         section: decision.section,
         rank: decision.rank,
-        inFile: decision.inFile,
+        eligible: decision.eligible,
       }),
     );
   }
@@ -487,9 +487,9 @@ async function retireMissingPages(
   sitePages: readonly Page[],
 ) {
   for (const page of sitePages) {
-    if (page.crawlId === context.crawlId || !page.inFile) continue;
+    if (page.crawlId === context.crawlId || !page.eligible) continue;
     await context.deps.store.updatePage(context.host, page.path, {
-      inFile: false,
+      eligible: false,
     });
   }
 }

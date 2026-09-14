@@ -15,7 +15,7 @@
           "section": "Tiny",
           "rank": 0,
           "depth": 0,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 210
         },
         {
@@ -25,7 +25,7 @@
           "section": "Tiny",
           "rank": 11,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 320,
           "description": "One paragraph about the two people who keep this running."
         },
@@ -36,7 +36,7 @@
           "section": "Tiny",
           "rank": 13,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 480,
           "description": "Short notes, published whenever there is something worth writing down."
         },
@@ -47,7 +47,7 @@
           "section": "Tiny",
           "rank": 15,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 360,
           "description": "The handful of things built here that other people still use."
         },
@@ -58,7 +58,7 @@
           "section": "Tiny",
           "rank": 18,
           "depth": 1,
-          "inFile": true,
+          "eligible": true,
           "wordCount": 140,
           "description": "What is taking up the time this month."
         }
@@ -73,7 +73,7 @@
       "section": "Tiny",
       "rank": 0,
       "depth": 0,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 210
     },
     {
@@ -83,7 +83,7 @@
       "section": "Tiny",
       "rank": 11,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 320,
       "description": "One paragraph about the two people who keep this running."
     },
@@ -94,7 +94,7 @@
       "section": "Tiny",
       "rank": 13,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 480,
       "description": "Short notes, published whenever there is something worth writing down."
     },
@@ -105,7 +105,7 @@
       "section": "Tiny",
       "rank": 15,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 360,
       "description": "The handful of things built here that other people still use."
     },
@@ -116,7 +116,7 @@
       "section": "Tiny",
       "rank": 18,
       "depth": 1,
-      "inFile": true,
+      "eligible": true,
       "wordCount": 140,
       "description": "What is taking up the time this month."
     }

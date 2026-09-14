@@ -8,7 +8,7 @@ describe("selectLinks", () => {
       sections: [
         {
           name: "Example",
-          pages: [{ path: "/a" }, { path: "/b", inFile: false }],
+          pages: [{ path: "/a" }, { path: "/b", eligible: false }],
         },
       ],
     });

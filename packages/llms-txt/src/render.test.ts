@@ -180,7 +180,7 @@ function expectRoundTrip(snapshot: CrawlSnapshot, options: RenderOptions = {}) {
   expect(parsed.sections).toEqual(oracle(snapshot, options));
 
   const allowed = new Set(
-    snapshot.pages.filter((page) => page.inFile).map((page) => page.url),
+    snapshot.pages.filter((page) => page.eligible).map((page) => page.url),
   );
   for (const section of parsed.sections) {
     for (const link of section.links) expect(allowed.has(link.url)).toBe(true);

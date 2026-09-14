@@ -323,15 +323,15 @@ export class DynamoStore implements Store {
       },
       ExpressionAttributeValues: { ":pk": sitePk(host), ":prefix": "PAGE#" },
     };
-    if (options.inFile !== undefined) {
-      input.FilterExpression = "#inFile = :inFile";
+    if (options.eligible !== undefined) {
+      input.FilterExpression = "#eligible = :eligible";
       input.ExpressionAttributeNames = {
         ...input.ExpressionAttributeNames,
-        "#inFile": "inFile",
+        "#eligible": "eligible",
       };
       input.ExpressionAttributeValues = {
         ...input.ExpressionAttributeValues,
-        ":inFile": options.inFile,
+        ":eligible": options.eligible,
       };
     }
     const items = await this.query(input);
@@ -419,7 +419,7 @@ export class DynamoStore implements Store {
             "SET #type = :type, #crawlId = :crawlId, #status = :queued, #depth = :depth, #lastSeenAt = :now, " +
             "#gsi1pk = :gsi1pk, #gsi1sk = :gsi1sk, " +
             "#url = if_not_exists(#url, :url), #path = if_not_exists(#path, :path), " +
-            "#inFile = if_not_exists(#inFile, :false), #firstSeenAt = if_not_exists(#firstSeenAt, :now)",
+            "#eligible = if_not_exists(#eligible, :false), #firstSeenAt = if_not_exists(#firstSeenAt, :now)",
           ConditionExpression:
             "attribute_not_exists(#crawlId) OR #crawlId <> :crawlId",
           ExpressionAttributeNames: {
@@ -432,7 +432,7 @@ export class DynamoStore implements Store {
             "#gsi1sk": TABLE.gsi1.sortKey,
             "#url": "url",
             "#path": "path",
-            "#inFile": "inFile",
+            "#eligible": "eligible",
             "#firstSeenAt": "firstSeenAt",
           },
           ExpressionAttributeValues: {

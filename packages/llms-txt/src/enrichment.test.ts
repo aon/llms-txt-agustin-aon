@@ -12,7 +12,7 @@ import {
 } from "./text.js";
 
 describe("buildEnrichmentRequest", () => {
-  it("sends the site, its sections and its in-file pages in order", () => {
+  it("sends the site, its sections and its eligible pages in order", () => {
     const request = buildEnrichmentRequest(loadFixture("docs-site"));
     expect(request.site).toEqual({
       host: "acme.dev",
