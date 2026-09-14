@@ -2,6 +2,7 @@ import { DEFAULT_SITE_CONFIG } from "../defaults.js";
 import type { Crawl } from "../entities/crawl.js";
 import type { Page, PageStatus } from "../entities/page.js";
 import type { Site } from "../entities/site.js";
+import { NotFoundError } from "../store/errors.js";
 import type {
   CrawlCounters,
   CrawlPatch,
@@ -307,8 +308,4 @@ function apply<T extends object>(target: T, patch: Patch<T>) {
     }
   }
   return target;
-}
-
-export class NotFoundError extends Error {
-  override readonly name = "NotFoundError";
 }

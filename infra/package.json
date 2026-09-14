@@ -1,0 +1,25 @@
+{
+  "name": "@llms-txt/infra",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "synth": "cdk synth",
+    "diff": "cdk diff",
+    "deploy": "cdk deploy",
+    "destroy": "cdk destroy"
+  },
+  "devDependencies": {
+    "@llms-txt/core": "workspace:*",
+    "@llms-txt/worker": "workspace:*",
+    "@types/node": "24.13.4",
+    "aws-cdk": "2.1141.0",
+    "aws-cdk-lib": "2.269.0",
+    "constructs": "10.8.1",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2",
+    "vitest": "5.0.0"
+  }
+}

@@ -1,4 +1,5 @@
 export * from "./crawl-store.js";
+export * from "./errors.js";
 export * from "./file-store.js";
 export * from "./job-queue.js";
 export * from "./page-store.js";

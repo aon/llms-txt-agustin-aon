@@ -1,7 +1,9 @@
 packages:
   - "apps/*"
   - "packages/*"
+  - "infra"
 
 allowBuilds:
   sharp: false
   unrs-resolver: false
+  esbuild: true
