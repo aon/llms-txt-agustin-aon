@@ -84,6 +84,91 @@ describe("selectLinks", () => {
     expect(paths(result.optional)).toEqual(["/docs/d2"]);
   });
 
+  it("shares the main budget by section weight, so a late section keeps its links", () => {
+    const snapshot = makeSnapshot({
+      sections: ["A", "B", "C", "D"]
+        .map((name) => ({
+          name,
+          pages: numbered(15, `/${name.toLowerCase()}/p`),
+        }))
+        .concat([{ name: "E", pages: numbered(3, "/e/p") }]),
+    });
+    const result = selectLinks(snapshot);
+    expect(result.sections.map((section) => section.links.length)).toEqual([
+      15, 15, 14, 13, 3,
+    ]);
+    expect(paths(result.sections[4]?.links)).toEqual([
+      "/e/p0",
+      "/e/p1",
+      "/e/p2",
+    ]);
+  });
+
+  it("gives a heavy section more of the budget than a light one listed before it", () => {
+    const snapshot = makeSnapshot({
+      sections: [
+        { name: "Example", pages: [{ path: "/", rank: 0 }] },
+        {
+          name: "Careers",
+          pages: numbered(15, "/careers/p").map((p) => ({
+            ...p,
+            rank: p.rank + 20,
+          })),
+        },
+        { name: "Products", pages: numbered(15, "/products/p") },
+      ],
+    });
+    const result = selectLinks(snapshot, {
+      ...RENDER_LIMITS,
+      maxMainLinks: 12,
+    });
+    const lengths = Object.fromEntries(
+      result.sections.map((section) => [section.name, section.links.length]),
+    );
+    expect(lengths.Products).toBeGreaterThan(lengths.Careers ?? 0);
+    expect(lengths.Careers).toBeGreaterThanOrEqual(
+      RENDER_LIMITS.minSectionLinks,
+    );
+  });
+
+  it("sends whole sections past the section limit to Optional", () => {
+    const snapshot = makeSnapshot({
+      sections: Array.from({ length: 10 }, (_, index) => ({
+        name: `S${index}`,
+        pages: numbered(2, `/s${index}/p`),
+      })),
+    });
+    const result = selectLinks(snapshot);
+    expect(result.sections.map((section) => section.name)).toEqual(
+      Array.from({ length: 8 }, (_, index) => `S${index}`),
+    );
+    expect(paths(result.optional)).toEqual([
+      "/s8/p0",
+      "/s9/p0",
+      "/s8/p1",
+      "/s9/p1",
+    ]);
+  });
+
+  it("tells links that share a title apart by their path", () => {
+    const snapshot = makeSnapshot({
+      sections: [
+        {
+          name: "Press",
+          pages: [
+            { path: "/press", title: "Press Overview" },
+            { path: "/press/awards", title: "Press Overview" },
+            { path: "/press/coverage", title: "Press Overview" },
+            { path: "/press/kit", title: "Press Kit" },
+          ],
+        },
+      ],
+    });
+    expect(
+      selectLinks(snapshot).sections[0]?.links.map((link) => link.title),
+    ).toEqual(["Press", "Awards", "Coverage", "Press Kit"]);
+  });
+
   it("folds a thin section into the first one and re-sorts by rank", () => {
     const snapshot = makeSnapshot({
       sections: [
@@ -170,6 +255,34 @@ describe("selectLinks", () => {
     expect(home("Example")).toBe("Home");
     expect(home("Acme")).toBe("Home");
     expect(home("Acme — build things")).toBe("Home");
+  });
+
+  it("treats the page the root redirected to as the homepage", () => {
+    const result = selectLinks(
+      makeSnapshot({
+        brand: "Acme",
+        sections: [
+          {
+            name: "Overview",
+            pages: [
+              {
+                path: "/en-us",
+                rank: 0,
+                depth: 0,
+                title: "Acme",
+                wordCount: 5,
+              },
+              { path: "/en-us/a", rank: 1, title: "A" },
+            ],
+          },
+        ],
+      }),
+    );
+    expect(result.sections[0]?.links.map((link) => link.title)).toEqual([
+      "Home",
+      "A",
+    ]);
+    expect(result.optional).toEqual([]);
   });
 
   it("sends a section the crawl already called Optional to the list", () => {

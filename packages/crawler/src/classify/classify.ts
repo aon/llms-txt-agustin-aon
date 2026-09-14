@@ -1,6 +1,6 @@
 import type { PageStatus } from "@llms-txt/core";
-import { pagePathFromUrl } from "@llms-txt/core";
-import { normalizeLink } from "../frontier/normalize.js";
+import { humanize, pagePathFromUrl } from "@llms-txt/core";
+import { localeSegmentOf, normalizeLink } from "../frontier/normalize.js";
 
 /** Lower rank is better. */
 export const RANK_WEIGHTS = Object.freeze({
@@ -13,7 +13,10 @@ export const RANK_WEIGHTS = Object.freeze({
 /** A first segment this many pages share is a section, nav menu or not. */
 export const MIN_SEGMENT_PAGES = 2;
 
-/** Kept as their own section: "Docs" beats folding them into the site name. */
+/** Where the homepage and the pages hanging off the nav go. Always listed first. */
+export const ROOT_SECTION = "Overview";
+
+/** Kept as their own section: "Docs" beats folding them into the root. */
 export const SECTION_SEGMENTS: ReadonlySet<string> = new Set([
   "docs",
   "doc",
@@ -38,6 +41,7 @@ export interface ClassifiablePage {
   status: PageStatus;
   noindex: boolean;
   allowed: boolean;
+  lang?: string;
   canonicalUrl?: string;
   contentHash?: string;
   inboundLinks: number;
@@ -52,74 +56,42 @@ export interface PageClassification {
   eligible: boolean;
 }
 
-export interface ClassifyOptions {
-  siteName: string;
-}
-
-export function classifyPages(
-  pages: readonly ClassifiablePage[],
-  options: ClassifyOptions,
-) {
+export function classifyPages(pages: readonly ClassifiablePage[]) {
   const winners = duplicateWinners(pages);
-  const crowded = crowdedSegments(pages);
+  const landing = landingOf(pages);
+  const locale = landing ? localeSegmentOf(landing.path) : undefined;
+  const crowded = crowdedSegments(pages, locale);
   const classified = pages.map((page) => ({
     path: page.path,
-    section: sectionOf(page, options.siteName, crowded),
-    rank: rankOf(page),
-    eligible: isEligible(page, winners),
+    section: sectionOf(page, crowded, locale),
+    rank: rankOf(page, landing),
+    eligible: isEligible(page, winners, landing),
   }));
-  return { pages: classified, sections: orderSections(classified, options) };
-}
-
-export function humanize(segment: string) {
-  const words = decodeSegment(segment)
-    .split(/[-_\s]+/)
-    .filter(Boolean);
-  if (words.length === 0) return "";
-  return words.map(capitalize).join(" ");
-}
-
-const ACRONYMS: Readonly<Record<string, string>> = Object.freeze({
-  api: "API",
-  faq: "FAQ",
-  sdk: "SDK",
-  cli: "CLI",
-  ui: "UI",
-});
-
-/** A path segment may hold a bare percent sign, which is not valid escaping. */
-function decodeSegment(segment: string) {
-  try {
-    return decodeURIComponent(segment);
-  } catch {
-    return segment;
-  }
-}
-
-function capitalize(word: string) {
-  const lower = word.toLowerCase();
-  return ACRONYMS[lower] ?? lower.charAt(0).toUpperCase() + lower.slice(1);
+  return { pages: classified, sections: orderSections(classified) };
 }
 
 function sectionOf(
   page: ClassifiablePage,
-  siteName: string,
   crowded: ReadonlySet<string>,
+  locale: string | undefined,
 ) {
-  const first = firstSegment(page.path);
-  if (!first) return siteName;
+  const first = firstSegment(page.path, locale);
+  if (!first) return ROOT_SECTION;
   const key = first.toLowerCase();
   if (SECTION_SEGMENTS.has(key) || crowded.has(key)) return humanize(first);
-  if (page.navLinked && page.depth <= 1) return siteName;
-  return humanize(first) || siteName;
+  if (page.navLinked && page.depth <= 1) return ROOT_SECTION;
+  return humanize(first) || ROOT_SECTION;
 }
 
-/** A menu that lists every feature page must not flatten them into the site section. */
-function crowdedSegments(pages: readonly ClassifiablePage[]) {
+/** A menu that lists every feature page must not flatten them into the root section. */
+function crowdedSegments(
+  pages: readonly ClassifiablePage[],
+  locale: string | undefined,
+) {
   const counts = new Map<string, number>();
   for (const page of pages) {
     if (page.status !== "fetched") continue;
-    const first = firstSegment(page.path)?.toLowerCase();
+    const first = firstSegment(page.path, locale)?.toLowerCase();
     if (first) counts.set(first, (counts.get(first) ?? 0) + 1);
   }
   const crowded = new Set<string>();
@@ -129,8 +101,8 @@ function crowdedSegments(pages: readonly ClassifiablePage[]) {
   return crowded;
 }
 
-function rankOf(page: ClassifiablePage) {
-  if (page.path === "/") return 0;
+function rankOf(page: ClassifiablePage, landing: ClassifiablePage | undefined) {
+  if (page.path === "/" || page === landing) return 0;
   const raw =
     page.depth * RANK_WEIGHTS.depth -
     page.inboundLinks * RANK_WEIGHTS.inboundLink -
@@ -144,14 +116,47 @@ function rankOf(page: ClassifiablePage) {
 function isEligible(
   page: ClassifiablePage,
   winners: ReadonlyMap<string, string>,
+  landing: ClassifiablePage | undefined,
 ) {
   if (page.status !== "fetched") return false;
   if (page.noindex || !page.allowed) return false;
+  if (isTranslation(page, landing)) return false;
   if (pointsElsewhere(page)) return false;
   if (page.contentHash && winners.get(page.contentHash) !== page.path) {
     return false;
   }
   return true;
+}
+
+/** The root, or wherever it redirected to: the page whose language the file follows. */
+function landingOf(pages: readonly ClassifiablePage[]) {
+  const fetched = pages.filter((page) => page.status === "fetched");
+  return (
+    fetched.find((page) => page.path === "/") ??
+    fetched.find((page) => page.depth === 0)
+  );
+}
+
+/** A copy of the site in another language, by its lang tag or a locale path such as /de-de/. */
+function isTranslation(
+  page: ClassifiablePage,
+  landing: ClassifiablePage | undefined,
+) {
+  if (!landing || page === landing) return false;
+  const locale = localeSegmentOf(page.path);
+  if (locale && locale !== localeSegmentOf(landing.path)) return true;
+  const language = primaryLanguage(page.lang);
+  const siteLanguage = primaryLanguage(landing.lang);
+  return (
+    language !== undefined &&
+    siteLanguage !== undefined &&
+    language !== siteLanguage
+  );
+}
+
+function primaryLanguage(lang: string | undefined) {
+  const primary = lang?.split("-")[0]?.trim().toLowerCase();
+  return primary || undefined;
 }
 
 function pointsElsewhere(page: ClassifiablePage) {
@@ -185,26 +190,26 @@ function shorterPath(candidate: string, current: string) {
   return candidate < current;
 }
 
-function orderSections(
-  pages: readonly PageClassification[],
-  options: ClassifyOptions,
-) {
-  const best = new Map<string, number>();
+/** Root first, then by weight, so many well-linked pages beat a single good one. */
+function orderSections(pages: readonly PageClassification[]) {
+  const weight = new Map<string, number>();
   for (const page of pages) {
-    const current = best.get(page.section);
-    if (current === undefined || page.rank < current) {
-      best.set(page.section, page.rank);
-    }
+    const gain = page.eligible ? 1 / (page.rank + 1) : 0;
+    weight.set(page.section, (weight.get(page.section) ?? 0) + gain);
   }
-  return [...best.keys()].sort((a, b) => {
-    if (a === options.siteName) return -1;
-    if (b === options.siteName) return 1;
-    const byRank = (best.get(a) ?? 0) - (best.get(b) ?? 0);
-    return byRank !== 0 ? byRank : a.localeCompare(b);
+  return [...weight.keys()].sort((a, b) => {
+    if (a === ROOT_SECTION) return -1;
+    if (b === ROOT_SECTION) return 1;
+    const byWeight = (weight.get(b) ?? 0) - (weight.get(a) ?? 0);
+    return byWeight !== 0 ? byWeight : a.localeCompare(b); // fallback to alphabetical
   });
 }
 
-function firstSegment(path: string) {
+/** On a site that lives under /en-us/, the segment after the locale is the section. */
+function firstSegment(path: string, locale: string | undefined) {
   const withoutQuery = path.split("?")[0] ?? "";
-  return withoutQuery.split("/").filter(Boolean)[0];
+  const segments = withoutQuery.split("/").filter(Boolean);
+  const start =
+    locale !== undefined && segments[0]?.toLowerCase() === locale ? 1 : 0;
+  return segments[start];
 }

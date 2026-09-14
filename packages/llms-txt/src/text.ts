@@ -1,3 +1,5 @@
+import { humanize } from "@llms-txt/core";
+
 export const MAX_SUMMARY_LENGTH = 300;
 export const MAX_TITLE_LENGTH = 120;
 export const MAX_NOTE_LENGTH = 250;
@@ -27,8 +29,27 @@ export function cleanNote(raw: string | undefined, title: string) {
   if (BOILERPLATE.test(collapsed.slice(0, BOILERPLATE_WINDOW)))
     return undefined;
   const note = escapeInline(truncateAtSentence(collapsed, MAX_NOTE_LENGTH));
-  if (!note || note.toLowerCase() === title.toLowerCase()) return undefined;
+  if (!note || restatesTitle(note, title)) return undefined;
   return note;
+}
+
+/** The last path segment as words, for a page whose title says nothing on its own. */
+export function titleFromPath(path: string) {
+  const segments = path.split("?")[0]?.split("/").filter(Boolean) ?? [];
+  return cleanLine(humanize(segments.at(-1) ?? ""), MAX_TITLE_LENGTH);
+}
+
+/** A note the title already contains, or the title plus a word or two, adds nothing. */
+function restatesTitle(note: string, title: string) {
+  const lowerNote = note.toLowerCase();
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes(lowerNote)) return true;
+  if (!lowerNote.includes(lowerTitle)) return false;
+  return wordCount(lowerNote) - wordCount(lowerTitle) <= 2;
+}
+
+function wordCount(value: string) {
+  return value.split(/\s+/).filter(Boolean).length;
 }
 
 /** A note that ends on a full stop reads better than one cut mid-clause. */
@@ -66,8 +87,18 @@ export function unescapeInline(value: string) {
   return value.replace(/\\([\\[\]])/g, "$1");
 }
 
+/** Some sites append the brand twice, so this strips until nothing matches. */
 function stripSuffix(title: string, name: string | undefined) {
   if (!name) return title;
+  let current = title;
+  while (true) {
+    const stripped = stripOnce(current, name);
+    if (stripped === current) return current;
+    current = stripped;
+  }
+}
+
+function stripOnce(title: string, name: string) {
   const lower = title.toLowerCase();
   for (const separator of BRAND_SEPARATORS) {
     const tail = `${separator}${name}`.toLowerCase();

@@ -1,6 +1,6 @@
 import type { Page } from "@llms-txt/core";
 import { describe, expect, it } from "vitest";
-import { buildSnapshot, siteNameFrom } from "./snapshot.js";
+import { buildSnapshot } from "./snapshot.js";
 
 describe("the site name", () => {
   it("is the brand the page titles repeat", () => {
@@ -56,7 +56,16 @@ describe("the site name", () => {
 });
 
 function nameOf(host: string, titles: ReadonlyArray<[string, string]>) {
-  return siteNameFrom(pages(host, titles), host);
+  return buildSnapshot({
+    site: { host, origin: `https://${host}` },
+    crawlId: "01TEST",
+    generatedAt: "2026-09-12T10:00:00.000Z",
+    pages: pages(host, titles),
+    sitePages: [],
+    sections: [],
+    startedAt: "2026-09-12T09:00:00.000Z",
+    changed: 0,
+  }).siteTitle;
 }
 
 function pages(host: string, titles: ReadonlyArray<[string, string]>) {

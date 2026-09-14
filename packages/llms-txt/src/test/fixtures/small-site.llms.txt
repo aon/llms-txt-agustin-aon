@@ -1,6 +1,6 @@
 # Tiny
 
-## Tiny
+## Overview
 
 - [Home](https://tiny.example/)
 - [About](https://tiny.example/about): One paragraph about the two people who keep this running.

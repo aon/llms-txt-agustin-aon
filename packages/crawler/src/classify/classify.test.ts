@@ -1,17 +1,16 @@
+import { humanize } from "@llms-txt/core";
 import { describe, expect, it } from "vitest";
 import type { ClassifiablePage } from "./classify.js";
-import { classifyPages, humanize } from "./classify.js";
-
-const SITE = { siteName: "Acme" };
+import { classifyPages, ROOT_SECTION } from "./classify.js";
 
 describe("classifyPages: sections", () => {
-  it("puts the homepage in the site's own section", () => {
-    expect(sectionOf(page({ path: "/", depth: 0 }))).toBe("Acme");
+  it("puts the homepage in the root section", () => {
+    expect(sectionOf(page({ path: "/", depth: 0 }))).toBe(ROOT_SECTION);
   });
 
-  it("puts nav pages near the root in the site's own section", () => {
+  it("puts nav pages near the root in the root section", () => {
     expect(sectionOf(page({ path: "/about", depth: 1, navLinked: true }))).toBe(
-      "Acme",
+      ROOT_SECTION,
     );
     expect(
       sectionOf(page({ path: "/deep/about", depth: 2, navLinked: true })),
@@ -26,24 +25,39 @@ describe("classifyPages: sections", () => {
   });
 
   it("gives a segment several pages share its own section, nav or not", () => {
-    const { pages } = classifyPages(
-      [
-        page({ path: "/", depth: 0 }),
-        page({ path: "/about", depth: 1, navLinked: true }),
-        page({ path: "/features", depth: 1, navLinked: true }),
-        page({ path: "/features/agenda", depth: 1, navLinked: true }),
-        page({ path: "/features/alerts", depth: 2 }),
-      ],
-      SITE,
-    );
+    const { pages } = classifyPages([
+      page({ path: "/", depth: 0 }),
+      page({ path: "/about", depth: 1, navLinked: true }),
+      page({ path: "/features", depth: 1, navLinked: true }),
+      page({ path: "/features/agenda", depth: 1, navLinked: true }),
+      page({ path: "/features/alerts", depth: 2 }),
+    ]);
     const sections = Object.fromEntries(pages.map((p) => [p.path, p.section]));
     expect(sections).toEqual({
-      "/": "Acme",
-      "/about": "Acme",
+      "/": ROOT_SECTION,
+      "/about": ROOT_SECTION,
       "/features": "Features",
       "/features/agenda": "Features",
       "/features/alerts": "Features",
     });
+  });
+
+  it("sections a site that lives under a locale by the segment after it", () => {
+    const { pages, sections } = classifyPages([
+      page({ path: "/en-us", depth: 0 }),
+      page({ path: "/en-us/about", depth: 1, navLinked: true }),
+      page({ path: "/en-us/docs", depth: 1, navLinked: true }),
+      page({ path: "/en-us/docs/start", depth: 2 }),
+      page({ path: "/de-de/docs", depth: 1 }),
+    ]);
+    expect(pages.map((p) => [p.path, p.section, p.rank])).toEqual([
+      ["/en-us", ROOT_SECTION, 0],
+      ["/en-us/about", ROOT_SECTION, 5],
+      ["/en-us/docs", "Docs", 5],
+      ["/en-us/docs/start", "Docs", 20],
+      ["/de-de/docs", "De De", 10],
+    ]);
+    expect(sections.slice(0, 2)).toEqual([ROOT_SECTION, "Docs"]);
   });
 
   it("humanizes any other first segment", () => {
@@ -52,34 +66,105 @@ describe("classifyPages: sections", () => {
     );
   });
 
-  it("leads with the site section and then follows the best rank", () => {
-    const { sections } = classifyPages(
-      [
-        page({ path: "/blog/late", depth: 3 }),
-        page({ path: "/docs", depth: 1, navLinked: true }),
-        page({ path: "/", depth: 0 }),
-      ],
-      SITE,
-    );
-    expect(sections).toEqual(["Acme", "Docs", "Blog"]);
+  it("leads with the root section and then follows section weight", () => {
+    const { sections } = classifyPages([
+      page({ path: "/blog/late", depth: 3 }),
+      page({ path: "/docs", depth: 1, navLinked: true }),
+      page({ path: "/", depth: 0 }),
+    ]);
+    expect(sections).toEqual([ROOT_SECTION, "Docs", "Blog"]);
+  });
+
+  it("weighs a section by all its pages, not its best one", () => {
+    const { sections } = classifyPages([
+      page({ path: "/", depth: 0 }),
+      page({ path: "/careers", depth: 1, navLinked: true }),
+      page({ path: "/careers/jobs", depth: 2 }),
+      ...["a", "b", "c", "d", "e", "f"].map((name) =>
+        page({ path: `/products/${name}`, depth: 2 }),
+      ),
+    ]);
+    expect(sections).toEqual([ROOT_SECTION, "Products", "Careers"]);
+  });
+
+  it("ignores pages left out of the file when weighing sections", () => {
+    const { sections } = classifyPages([
+      page({ path: "/", depth: 0 }),
+      page({ path: "/tags/a", depth: 1, noindex: true }),
+      page({ path: "/tags/b", depth: 1, noindex: true }),
+      page({ path: "/tags/c", depth: 1, noindex: true }),
+      page({ path: "/docs", depth: 2 }),
+      page({ path: "/docs/x", depth: 2 }),
+    ]);
+    expect(sections).toEqual([ROOT_SECTION, "Docs", "Tags"]);
+  });
+});
+
+describe("classifyPages: translations", () => {
+  it("leaves out copies of the site under a locale prefix", () => {
+    const { pages } = classifyPages([
+      page({ path: "/", depth: 0 }),
+      page({ path: "/pricing", depth: 1 }),
+      page({ path: "/de-de/pricing", depth: 1 }),
+      page({ path: "/pt-br/pricing", depth: 1 }),
+    ]);
+    expect(pages.map((p) => [p.path, p.eligible])).toEqual([
+      ["/", true],
+      ["/pricing", true],
+      ["/de-de/pricing", false],
+      ["/pt-br/pricing", false],
+    ]);
+  });
+
+  it("leaves out pages in another language than the landing", () => {
+    const { pages } = classifyPages([
+      page({ path: "/", depth: 0, lang: "en-US" }),
+      page({ path: "/about", depth: 1, lang: "en-GB" }),
+      page({ path: "/es/about", depth: 1, lang: "es" }),
+      page({ path: "/untagged", depth: 1 }),
+    ]);
+    expect(pages.map((p) => [p.path, p.eligible])).toEqual([
+      ["/", true],
+      ["/about", true],
+      ["/es/about", false],
+      ["/untagged", true],
+    ]);
+  });
+
+  it("keeps the locale the landing itself lives under", () => {
+    const { pages } = classifyPages([
+      page({ path: "/en-us", depth: 0 }),
+      page({ path: "/en-us/docs", depth: 1 }),
+      page({ path: "/fr-fr/docs", depth: 1 }),
+    ]);
+    expect(pages.map((p) => [p.path, p.eligible])).toEqual([
+      ["/en-us", true],
+      ["/en-us/docs", true],
+      ["/fr-fr/docs", false],
+    ]);
+  });
+
+  it("keeps every language when the landing has no lang tag", () => {
+    const { pages } = classifyPages([
+      page({ path: "/", depth: 0 }),
+      page({ path: "/about", depth: 1, lang: "fr" }),
+    ]);
+    expect(pages.every((p) => p.eligible)).toBe(true);
   });
 });
 
 describe("classifyPages: rank", () => {
   it("keeps rank 0 for the homepage alone", () => {
-    const { pages } = classifyPages(
-      [
-        page({ path: "/", depth: 0 }),
-        page({
-          path: "/hub",
-          depth: 1,
-          navLinked: true,
-          inSitemap: true,
-          inboundLinks: 50,
-        }),
-      ],
-      SITE,
-    );
+    const { pages } = classifyPages([
+      page({ path: "/", depth: 0 }),
+      page({
+        path: "/hub",
+        depth: 1,
+        navLinked: true,
+        inSitemap: true,
+        inboundLinks: 50,
+      }),
+    ]);
     expect(pages.map((p) => p.rank)).toEqual([0, 1]);
   });
 
@@ -110,7 +195,9 @@ describe("classifyPages: eligible", () => {
   });
 
   it("excludes noindex and disallowed pages", () => {
-    expect(eligibleOf(page({ path: "/a", depth: 1, noindex: true }))).toBe(false);
+    expect(eligibleOf(page({ path: "/a", depth: 1, noindex: true }))).toBe(
+      false,
+    );
     expect(eligibleOf(page({ path: "/a", depth: 1, allowed: false }))).toBe(
       false,
     );
@@ -156,14 +243,11 @@ describe("classifyPages: eligible", () => {
   });
 
   it("keeps the shortest path of a set of duplicates", () => {
-    const { pages } = classifyPages(
-      [
-        page({ path: "/about-us-copy", depth: 1, contentHash: "h" }),
-        page({ path: "/about", depth: 1, contentHash: "h" }),
-        page({ path: "/other", depth: 1, contentHash: "g" }),
-      ],
-      SITE,
-    );
+    const { pages } = classifyPages([
+      page({ path: "/about-us-copy", depth: 1, contentHash: "h" }),
+      page({ path: "/about", depth: 1, contentHash: "h" }),
+      page({ path: "/other", depth: 1, contentHash: "g" }),
+    ]);
     expect(pages.map((p) => [p.path, p.eligible])).toEqual([
       ["/about-us-copy", false],
       ["/about", true],
@@ -172,13 +256,10 @@ describe("classifyPages: eligible", () => {
   });
 
   it("breaks a duplicate tie on the path itself", () => {
-    const { pages } = classifyPages(
-      [
-        page({ path: "/bbb", depth: 1, contentHash: "h" }),
-        page({ path: "/aaa", depth: 1, contentHash: "h" }),
-      ],
-      SITE,
-    );
+    const { pages } = classifyPages([
+      page({ path: "/bbb", depth: 1, contentHash: "h" }),
+      page({ path: "/aaa", depth: 1, contentHash: "h" }),
+    ]);
     expect(pages.map((p) => p.eligible)).toEqual([false, true]);
   });
 });
@@ -212,7 +293,7 @@ function page(overrides: Partial<ClassifiablePage> & { path: string }) {
 }
 
 function classifyOne(item: ClassifiablePage) {
-  const first = classifyPages([item], SITE).pages[0];
+  const first = classifyPages([item]).pages[0];
   if (!first) throw new Error("nothing was classified");
   return first;
 }

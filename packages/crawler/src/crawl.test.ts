@@ -1,6 +1,7 @@
 import type { Page, SiteConfig } from "@llms-txt/core";
 import { htmlKey, MemoryFileStore, snapshotKey } from "@llms-txt/core";
 import { describe, expect, it } from "vitest";
+import { ROOT_SECTION } from "./classify/classify.js";
 import { crawl } from "./crawl.js";
 import { RateLimitedError } from "./fetch/limiter.js";
 import {
@@ -97,9 +98,9 @@ describe("crawl: one pass over a whole site", () => {
     if (!result.finished) throw new Error("the crawl did not finish");
     const { snapshot } = result;
 
-    expect(snapshot.sections[0]?.name).toBe("Acme");
-    expect(sectionOf(snapshot.sections, "/")).toBe("Acme");
-    expect(sectionOf(snapshot.sections, "/about")).toBe("Acme");
+    expect(snapshot.sections[0]?.name).toBe(ROOT_SECTION);
+    expect(sectionOf(snapshot.sections, "/")).toBe(ROOT_SECTION);
+    expect(sectionOf(snapshot.sections, "/about")).toBe(ROOT_SECTION);
     for (const path of ["/docs", "/docs/api", "/docs/getting-started"]) {
       expect(sectionOf(snapshot.sections, path)).toBe("Docs");
     }
@@ -221,6 +222,49 @@ describe("crawl: handing off and resuming", () => {
     );
     expect(refetched).toEqual([]);
   });
+
+  it("keeps following the locale the landing redirected into", async () => {
+    const under = (path: string) => `${FIXTURE_ORIGIN}/en-us${path}`;
+    const site = await harness(
+      { concurrency: 1 },
+      minimalRoutes({
+        [`${FIXTURE_ORIGIN}/`]: { redirectTo: under("") },
+        [`${FIXTURE_ORIGIN}/sitemap.xml`]: {
+          body: sitemap(under("/docs/api"), `${FIXTURE_ORIGIN}/de-de/docs`),
+          headers: { "content-type": "application/xml" },
+        },
+        [under("")]: { body: links("/en-us/about", "/en-us/docs", "/de-de") },
+        [under("/about")]: { body: page("About | Acme", "Who we are.") },
+        [under("/docs")]: { body: links("/en-us/docs/start") },
+        [under("/docs/start")]: { body: page("Start | Acme", "First steps.") },
+        [under("/docs/api")]: { body: page("API | Acme", "Every endpoint.") },
+        [`${FIXTURE_ORIGIN}/de-de`]: {
+          body: page("Über | Acme", "Wer wir sind."),
+        },
+      }),
+    );
+
+    const first = await site.run(CRAWL, 2500);
+    expect(first.finished).toBe(false);
+    const second = await site.run(CRAWL);
+    if (!second.finished) throw new Error("the crawl did not finish");
+
+    expect(await site.statuses()).toEqual({
+      "/": "skipped",
+      "/en-us": "fetched",
+      "/en-us/about": "fetched",
+      "/en-us/docs": "fetched",
+      "/en-us/docs/api": "fetched",
+      "/en-us/docs/start": "fetched",
+    });
+    const { snapshot } = second;
+    expect(snapshot.sections.map((section) => section.name)).toEqual([
+      ROOT_SECTION,
+      "Docs",
+    ]);
+    expect(sectionOf(snapshot.sections, "/en-us/about")).toBe(ROOT_SECTION);
+    expect(snapshot.pages[0]).toMatchObject({ path: "/en-us", rank: 0 });
+  });
 });
 
 describe("crawl: crawling a site twice", () => {
@@ -280,6 +324,7 @@ describe("crawl: redirects and stale rows", () => {
     expect((await site.store.getPage(FIXTURE_HOST, "/about"))?.url).toBe(
       `${www}/about`,
     );
+    expect((await site.store.getPage(FIXTURE_HOST, "/"))?.url).toBe(`${www}/`);
   });
 
   it("treats a redirect that only adds a trailing slash as the same page", async () => {
@@ -490,6 +535,11 @@ function minimalRoutes(routes: FakeRoutes): FakeRoutes {
 function links(...paths: readonly string[]) {
   const anchors = paths.map((path) => `<a href="${path}">${path}</a>`).join("");
   return `<!doctype html><html lang="en"><head><title>Acme</title></head><body><nav>${anchors}</nav><main><p>A home page with a paragraph long enough to describe it.</p></main></body></html>`;
+}
+
+function sitemap(...urls: readonly string[]) {
+  const entries = urls.map((url) => `<url><loc>${url}</loc></url>`).join("");
+  return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${entries}</urlset>`;
 }
 
 function pathOf(url: string) {

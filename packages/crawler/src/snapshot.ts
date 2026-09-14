@@ -5,7 +5,7 @@ import type {
   SnapshotPage,
   SnapshotSection,
 } from "@llms-txt/core";
-import { humanize } from "./classify/classify.js";
+import { humanize } from "@llms-txt/core";
 
 export const MAX_DIFF_SAMPLES = 10;
 /** Enough of a landing for a model to describe the site, not a full-text dump. */
@@ -79,11 +79,6 @@ export function landingOf<T extends Pick<Page, "path" | "depth" | "status">>(
     fetched.find((page) => page.path === "/") ??
     fetched.find((page) => page.depth === 0)
   );
-}
-
-export function siteNameFrom(pages: readonly Page[], host: string) {
-  const titles = pages.flatMap((page) => (page.title ? [page.title] : []));
-  return siteName(repeatedBrand(titles), landingOf(pages)?.title, host);
 }
 
 function buildDiff(input: BuildSnapshotInput) {

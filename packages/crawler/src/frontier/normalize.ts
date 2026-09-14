@@ -15,6 +15,28 @@ export function normalizeLink(href: string, base: string, host: string) {
   return url.toString();
 }
 
+/** A first segment like "de-de" or "pt-br": a translated copy of the site, not a section. */
+export function localeSegmentOf(path: string) {
+  const first = path.split("?")[0]?.split("/").filter(Boolean)[0];
+  if (!first || !LOCALE_SHAPE.test(first)) return undefined;
+  return isKnownLocale(first) ? first.toLowerCase() : undefined;
+}
+
+const LOCALE_SHAPE = /^[a-z]{2,3}-[a-z]{2,4}$/i;
+const LOCALE_NAMES = new Intl.DisplayNames(["en"], {
+  type: "language",
+  fallback: "none",
+});
+
+/** ICU names every real language and region, so "how-to" and "no-go" name nothing. */
+function isKnownLocale(tag: string) {
+  try {
+    return LOCALE_NAMES.of(tag) !== undefined;
+  } catch {
+    return false;
+  }
+}
+
 /** Query keys that only identify a campaign, never a different page. */
 export const TRACKING_PARAMS: ReadonlySet<string> = new Set([
   "gclid",

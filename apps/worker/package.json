@@ -15,7 +15,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "enqueue": "pnpm -w exec turbo run build --filter=@llms-txt/core && node scripts/enqueue.ts",
+    "status": "pnpm -w exec turbo run build --filter=@llms-txt/core && node scripts/status.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.1131.0",
@@ -27,6 +29,7 @@
     "@llms-txt/llms-txt": "workspace:*"
   },
   "devDependencies": {
+    "@aws-sdk/client-cloudformation": "3.1131.0",
     "@types/aws-lambda": "8.10.163",
     "@types/node": "24.13.4",
     "typescript": "7.0.2",

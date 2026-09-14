@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeLink } from "./normalize.js";
+import { localeSegmentOf, normalizeLink } from "./normalize.js";
 
 const BASE = "https://example.com/docs/intro";
 const HOST = "example.com";
@@ -74,5 +74,32 @@ describe("normalizeLink", () => {
     expect(normalize("")).toBeNull();
     expect(normalize("   ")).toBeNull();
     expect(normalize("http://")).toBeNull();
+  });
+});
+
+describe("localeSegmentOf", () => {
+  it("recognizes a language and region or script prefix", () => {
+    expect(localeSegmentOf("/de-de/pricing")).toBe("de-de");
+    expect(localeSegmentOf("/pt-br")).toBe("pt-br");
+    expect(localeSegmentOf("/EN-US/docs?x=1")).toBe("en-us");
+    expect(localeSegmentOf("/zh-hans/docs")).toBe("zh-hans");
+    expect(localeSegmentOf("/fil-ph")).toBe("fil-ph");
+  });
+
+  it("leaves hyphenated words alone", () => {
+    for (const path of [
+      "/how-to/x",
+      "/use-case/x",
+      "/our-team",
+      "/web-apps",
+      "/sign-up",
+      "/no-go",
+      "/en-xx",
+      "/en-us-old/x",
+      "/en",
+      "/",
+    ]) {
+      expect(localeSegmentOf(path)).toBeUndefined();
+    }
   });
 });

@@ -2,7 +2,7 @@
 
 > Acme builds small tools that do one job and then stay out of the way of the people using them.
 
-## Acme
+## Overview
 
 - [Home](https://acme.dev/)
 - [About](https://acme.dev/about): Who builds Acme, how the company started and where it is going next.

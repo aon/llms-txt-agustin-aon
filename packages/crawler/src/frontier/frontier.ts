@@ -5,6 +5,7 @@ import type {
   SiteConfig,
 } from "@llms-txt/core";
 import { pagePathFromUrl } from "@llms-txt/core";
+import { localeSegmentOf } from "./normalize.js";
 
 export const COMMIT_BATCH_SIZE = 25;
 
@@ -38,6 +39,7 @@ export class Frontier {
       if (this.seen.has(page.path)) continue;
       this.seen.add(page.path);
       this.countPrefix(page.path);
+      if (page.depth === 0) this.localePrefix ??= localeSegmentOf(page.path);
       if (page.status === "queued") {
         this.queue.push({ url: page.url, path: page.path, depth: page.depth });
       }
@@ -67,6 +69,8 @@ export class Frontier {
   /** Same as `discover` for a single URL whose guards were already checked. */
   async claim(page: DiscoveredPage) {
     if (this.seen.has(page.path)) return 0;
+    // A landing that redirected under /en-us/ makes that the one locale worth crawling.
+    if (page.depth === 0) this.localePrefix = localeSegmentOf(page.path);
     this.seen.add(page.path);
     this.countPrefix(page.path);
     return await this.store.upsertQueuedPages(this.host, this.crawlId, [page]);
@@ -85,12 +89,15 @@ export class Frontier {
   private readonly seen = new Set<string>();
   private readonly prefixCounts = new Map<string, number>();
   private cursor = 0;
+  private localePrefix: string | undefined;
 
   private accept(url: string, depth: number) {
     if (depth > this.config.maxDepth) return null;
     if (this.seen.size >= this.config.pageCap) return null;
     const path = pagePathFromUrl(url);
     if (this.seen.has(path)) return null;
+    const locale = localeSegmentOf(path);
+    if (locale && locale !== this.localePrefix) return null;
     const segments = pathSegments(path);
     if (segments.length > MAX_PATH_SEGMENTS) return null;
     if (queryParamCount(url) > MAX_QUERY_PARAMS) return null;

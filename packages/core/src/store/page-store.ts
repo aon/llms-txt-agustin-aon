@@ -7,7 +7,7 @@ export interface DiscoveredPage {
   depth: number;
 }
 
-export type PagePatch = Patch<Omit<Page, "url" | "path" | "firstSeenAt">>;
+export type PagePatch = Patch<Omit<Page, "path" | "firstSeenAt">>;
 
 export interface ListPagesOptions {
   eligible?: boolean;

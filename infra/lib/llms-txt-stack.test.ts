@@ -73,9 +73,9 @@ describe("LlmsTxtStack", () => {
     );
   });
 
-  it("sweeps for due sites every hour", () => {
+  it("sweeps for due sites once a day", () => {
     template.hasResourceProperties("AWS::Scheduler::Schedule", {
-      ScheduleExpression: "rate(1 hour)",
+      ScheduleExpression: "rate(1 day)",
     });
   });
 

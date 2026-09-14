@@ -128,6 +128,35 @@ describe("Frontier", () => {
     expect(frontier.take()?.path).toBe("/a");
   });
 
+  it("skips translated copies of the site under a locale prefix", async () => {
+    const frontier = await build();
+    expect(
+      await frontier.discover(urls("/pricing", "/de-de/pricing", "/pt-br"), 1),
+    ).toBe(1);
+    expect(frontier.take()?.path).toBe("/pricing");
+  });
+
+  it("keeps the locale the landing redirected into", async () => {
+    const frontier = await build();
+    await frontier.claim({ url: `${ORIGIN}/en-us`, path: "/en-us", depth: 0 });
+    expect(await frontier.discover(urls("/en-us/docs", "/fr-fr/docs"), 1)).toBe(
+      1,
+    );
+    expect(frontier.take()?.path).toBe("/en-us/docs");
+  });
+
+  it("restores the landing's locale from the rows it resumes", async () => {
+    const frontier = await build();
+    frontier.resume([
+      { ...row("/", "skipped"), depth: 0 },
+      { ...row("/en-us", "fetched"), depth: 0 },
+    ]);
+    expect(await frontier.discover(urls("/en-us/docs", "/fr-fr/docs"), 1)).toBe(
+      1,
+    );
+    expect(frontier.take()?.path).toBe("/en-us/docs");
+  });
+
   it("claims a redirect target without queueing it", async () => {
     const frontier = await build();
     expect(

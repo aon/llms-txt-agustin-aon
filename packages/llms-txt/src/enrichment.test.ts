@@ -24,7 +24,7 @@ describe("buildEnrichmentRequest", () => {
       landingText:
         "Acme Acme builds small tools that do one job and then stay out of the way of the people using them. Read the docs, follow the blog or check the changelog.",
     });
-    expect(request.sections).toEqual(["Acme", "Docs", "Blog", "Changelog"]);
+    expect(request.sections).toEqual(["Overview", "Docs", "Blog", "Changelog"]);
     expect(request.pages[0]?.path).toBe("/");
     expect(request.pages.map((page) => page.path)).not.toContain("/noindex");
   });

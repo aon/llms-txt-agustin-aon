@@ -26,6 +26,12 @@ describe("cleanTitle", () => {
     expect(cleanTitle("Acme | Acme", "Acme")).toBe("Acme");
   });
 
+  it("strips a brand a site appends twice", () => {
+    expect(cleanTitle("Cloudforce One | Acme | Acme", "Acme")).toBe(
+      "Cloudforce One",
+    );
+  });
+
   it("collapses whitespace and escapes brackets", () => {
     expect(cleanTitle("  Getting\n  started  ", undefined)).toBe(
       "Getting started",
@@ -56,6 +62,21 @@ describe("cleanNote", () => {
     expect(cleanNote(undefined, "Docs")).toBeUndefined();
     expect(cleanNote("   ", "Docs")).toBeUndefined();
     expect(cleanNote("docs", "Docs")).toBeUndefined();
+  });
+
+  it("drops a note the title already says", () => {
+    expect(
+      cleanNote(
+        "Reference Architecture Center",
+        "Reference architecture center | Diagrams & guides",
+      ),
+    ).toBeUndefined();
+    expect(
+      cleanNote("Acme's Modernize networks", "Modernize networks"),
+    ).toBeUndefined();
+    expect(cleanNote("Docs for the widget API and CLI", "Docs")).toBe(
+      "Docs for the widget API and CLI",
+    );
   });
 
   it("drops cookie and consent boilerplate", () => {

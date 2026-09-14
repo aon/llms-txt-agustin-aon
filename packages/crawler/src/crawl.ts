@@ -20,7 +20,7 @@ import { type FetchOutcome, fetchPage } from "./fetch/fetch-page.js";
 import { HostLimiter } from "./fetch/limiter.js";
 import { Frontier } from "./frontier/frontier.js";
 import { normalizeLink } from "./frontier/normalize.js";
-import { buildSnapshot, landingOf, siteNameFrom } from "./snapshot.js";
+import { buildSnapshot, landingOf } from "./snapshot.js";
 
 /** Never hammer a host faster than this, whatever robots.txt allows. */
 export const MIN_REQUEST_SPACING_MS = 1000;
@@ -68,6 +68,8 @@ interface CrawlContext {
   readonly inbound: Map<string, Set<string>>;
   readonly navLinked: Set<string>;
   readonly sitemapPaths: Set<string>;
+  /** Kept so the sitemap can be offered again once the landing reveals its locale. */
+  readonly sitemapUrls: string[];
   fetched: number;
   outOfBudget: boolean;
   failure: unknown;
@@ -115,6 +117,7 @@ async function begin(input: CrawlInput, deps: CrawlDeps) {
     inbound: new Map(),
     navLinked: new Set(),
     sitemapPaths: new Set(),
+    sitemapUrls: [],
     fetched: rows.filter((page) => page.status === "fetched").length,
     outOfBudget: false,
     failure: undefined,
@@ -174,19 +177,19 @@ async function seed(context: CrawlContext) {
     fetch: deps.fetch,
   });
 
-  const fromSitemap: string[] = [];
+  // A long sitemap must not eat the whole page cap before the homepage's turn.
+  const seedCap = Math.floor(context.config.pageCap / 2);
   for (const url of sitemapUrls) {
     const normalized = normalizeLink(url, context.origin, context.host);
     if (!normalized) continue;
     context.sitemapPaths.add(pagePathFromUrl(normalized));
-    fromSitemap.push(normalized);
+    if (context.sitemapUrls.length < seedCap)
+      context.sitemapUrls.push(normalized);
   }
 
-  // A long sitemap must not eat the whole page cap before the homepage's turn.
-  const seedCap = Math.floor(context.config.pageCap / 2);
   const queued =
     (await context.frontier.discover([`${context.origin}/`], 0)) +
-    (await context.frontier.discover(fromSitemap.slice(0, seedCap), 1));
+    (await context.frontier.discover(context.sitemapUrls, 1));
   await bumpQueued(context, queued);
 }
 
@@ -279,8 +282,9 @@ async function storePage(
   item: DiscoveredPage,
   outcome: Extract<FetchOutcome, { kind: "ok" }>,
 ) {
-  const path = await resolveRedirect(context, item, outcome);
-  if (path === null) return;
+  const landed = await resolveRedirect(context, item, outcome);
+  if (landed === null) return;
+  const path = landed.path;
 
   const { store, files } = context.deps;
   const previous = await store.getPage(context.host, path);
@@ -308,6 +312,7 @@ async function storePage(
     // An explicit undefined removes whatever an earlier crawl left here.
     skipReason: undefined,
   };
+  if (landed.url !== item.url) patch.url = landed.url;
   if (page.title) patch.title = page.title;
   if (page.description) patch.description = page.description;
   if (page.lang) patch.lang = page.lang;
@@ -335,14 +340,23 @@ async function resolveRedirect(
   context: CrawlContext,
   item: DiscoveredPage,
   outcome: Extract<FetchOutcome, { kind: "ok" }>,
-) {
+): Promise<DiscoveredPage | null> {
   const url = normalizeLink(outcome.url, context.origin, context.host);
-  const finalPath = url === null ? item.path : pagePathFromUrl(url);
-  if (url === null || finalPath === item.path) return item.path;
+  if (url === null) return item;
+  const finalPath = pagePathFromUrl(url);
+  // Same page on another host, www for instance: the row keeps the URL that answered.
+  if (finalPath === item.path) return { ...item, url };
   await markSkipped(context, item.path, "redirect", outcome.status);
   if (context.frontier.has(finalPath)) return null;
   await context.frontier.claim({ url, path: finalPath, depth: item.depth });
-  return finalPath;
+  // The sitemap was seeded before the landing settled which locale to follow.
+  if (item.depth === 0) {
+    await bumpQueued(
+      context,
+      await context.frontier.discover(context.sitemapUrls, 1),
+    );
+  }
+  return { url, path: finalPath, depth: item.depth };
 }
 
 function recordLinks(
@@ -416,10 +430,8 @@ async function classify(context: CrawlContext) {
     phase: "extracting",
   });
   const rows = await store.listPagesByCrawl(context.crawlId);
-  const siteName = siteNameFrom(rows, context.host);
   const result = classifyPages(
     rows.map((page) => toClassifiable(context, page)),
-    { siteName },
   );
 
   const decisions = new Map(result.pages.map((page) => [page.path, page]));
@@ -506,6 +518,7 @@ function toClassifiable(context: CrawlContext, page: Page) {
     navLinked: context.navLinked.has(page.path),
     inSitemap: context.sitemapPaths.has(page.path),
   };
+  if (page.lang) item.lang = page.lang;
   if (page.canonicalUrl) item.canonicalUrl = page.canonicalUrl;
   if (page.contentHash) item.contentHash = page.contentHash;
   return item;
