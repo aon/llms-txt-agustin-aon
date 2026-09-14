@@ -1,0 +1,681 @@
+{
+  "host": "acme.dev",
+  "origin": "https://acme.dev",
+  "crawlId": "01FIXTURECRAWL0000000000",
+  "generatedAt": "2026-09-12T10:00:00.000Z",
+  "siteTitle": "Acme",
+  "siteDescription": "Acme builds small tools that do one job and then stay out of the way of the people using them.",
+  "brand": "Acme",
+  "landingText": "Acme Acme builds small tools that do one job and then stay out of the way of the people using them. Read the docs, follow the blog or check the changelog.",
+  "sections": [
+    {
+      "name": "Acme",
+      "pages": [
+        {
+          "url": "https://acme.dev/",
+          "path": "/",
+          "title": "Acme",
+          "section": "Acme",
+          "rank": 0,
+          "depth": 0,
+          "inFile": true,
+          "wordCount": 340,
+          "description": "Acme builds small tools that do one job and then stay out of the way of the people using them."
+        },
+        {
+          "url": "https://acme.dev/about",
+          "path": "/about",
+          "title": "About | Acme",
+          "section": "Acme",
+          "rank": 12,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 420,
+          "description": "Who builds Acme, how the company started and where it is going next."
+        },
+        {
+          "url": "https://acme.dev/pricing",
+          "path": "/pricing",
+          "title": "Pricing | Acme",
+          "section": "Acme",
+          "rank": 14,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 260,
+          "description": "What every plan costs, what it includes and when a bigger plan pays off."
+        },
+        {
+          "url": "https://acme.dev/careers",
+          "path": "/careers",
+          "title": "Careers - Acme",
+          "section": "Acme",
+          "rank": 16,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 310,
+          "description": "Open roles on the engineering, design and support teams, with how we hire."
+        },
+        {
+          "url": "https://acme.dev/support",
+          "path": "/support",
+          "title": "Support | Acme",
+          "section": "Acme",
+          "rank": 17,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 180,
+          "description": "We use cookies to make this site work, so please accept them before reading on."
+        },
+        {
+          "url": "https://acme.dev/team",
+          "path": "/team",
+          "title": "The Team \u2013 Acme",
+          "section": "Acme",
+          "rank": 19,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 150
+        },
+        {
+          "url": "https://acme.dev/contact",
+          "path": "/contact",
+          "title": "Contact | Acme",
+          "section": "Acme",
+          "rank": 21,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 28,
+          "description": "Every way to reach the team, by mail, by post or in person."
+        },
+        {
+          "url": "https://acme.dev/privacy",
+          "path": "/privacy",
+          "title": "Privacy Policy | Acme",
+          "section": "Acme",
+          "rank": 24,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 900,
+          "description": "How Acme collects, stores and deletes the personal data of the people who use it."
+        },
+        {
+          "url": "https://acme.dev/terms",
+          "path": "/terms",
+          "title": "Terms of Service | Acme",
+          "section": "Acme",
+          "rank": 25,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 1100,
+          "description": "The contract between Acme and anyone who signs up for one of the plans."
+        },
+        {
+          "url": "https://acme.dev/login",
+          "path": "/login",
+          "title": "Log in | Acme",
+          "section": "Acme",
+          "rank": 26,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 40,
+          "description": "Sign in to the Acme dashboard with an email address and a password."
+        },
+        {
+          "url": "https://acme.dev/noindex",
+          "path": "/noindex",
+          "title": "Internal | Acme",
+          "section": "Acme",
+          "rank": 30,
+          "depth": 1,
+          "inFile": false,
+          "wordCount": 200,
+          "description": "An internal page the crawler fetched but left out of the file."
+        }
+      ]
+    },
+    {
+      "name": "Docs",
+      "pages": [
+        {
+          "url": "https://acme.dev/docs",
+          "path": "/docs",
+          "title": "Docs | Acme",
+          "section": "Docs",
+          "rank": 5,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 220,
+          "description": "Everything you need to run Acme, from the first install to the last endpoint."
+        },
+        {
+          "url": "https://acme.dev/docs/getting-started",
+          "path": "/docs/getting-started",
+          "title": "Getting Started | Acme",
+          "section": "Docs",
+          "rank": 8,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 640,
+          "description": "Install Acme, point it at a site and read the file it writes, in about five minutes."
+        },
+        {
+          "url": "https://acme.dev/docs/install",
+          "path": "/docs/install",
+          "title": "Install | Acme",
+          "section": "Docs",
+          "rank": 9,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 380,
+          "description": "Install Acme with npm, with Docker or from source, on macOS, Linux and Windows."
+        },
+        {
+          "url": "https://acme.dev/docs/cli",
+          "path": "/docs/cli",
+          "title": "CLI Reference | Acme",
+          "section": "Docs",
+          "rank": 10,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 720,
+          "description": "Every command the CLI understands, with its flags, its defaults and an example of each."
+        },
+        {
+          "url": "https://acme.dev/docs/api",
+          "path": "/docs/api",
+          "title": "API | Acme",
+          "section": "Docs",
+          "rank": 11,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 980,
+          "description": "Every endpoint the service exposes, with the parameters it takes, the shape of what it returns, the errors it can raise and the rate limits that apply to each one of them, written out in full."
+        },
+        {
+          "url": "https://acme.dev/docs/api/crawls",
+          "path": "/docs/api/crawls",
+          "title": "Crawls API | Docs | Acme",
+          "section": "Docs",
+          "rank": 15,
+          "depth": 3,
+          "inFile": true,
+          "wordCount": 500,
+          "description": "The Acme HTTP API and every setting behind it, end to end."
+        },
+        {
+          "url": "https://acme.dev/docs/api/pages",
+          "path": "/docs/api/pages",
+          "title": "Pages API | Docs | Acme",
+          "section": "Docs",
+          "rank": 15,
+          "depth": 3,
+          "inFile": true,
+          "wordCount": 540,
+          "description": "The Acme HTTP API and every setting behind it, end to end."
+        },
+        {
+          "url": "https://acme.dev/docs/config",
+          "path": "/docs/config",
+          "title": "Configuration [beta] | Acme",
+          "section": "Docs",
+          "rank": 18,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 460,
+          "description": "The Acme HTTP API and every setting behind it, end to end."
+        },
+        {
+          "url": "https://acme.dev/docs/faq",
+          "path": "/docs/faq",
+          "title": "FAQ | Acme",
+          "section": "Docs",
+          "rank": 20,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 300,
+          "description": "FAQ"
+        },
+        {
+          "url": "https://acme.dev/docs/troubleshooting",
+          "path": "/docs/troubleshooting",
+          "title": "Troubleshooting | Acme",
+          "section": "Docs",
+          "rank": 22,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 34,
+          "description": "What to do when a crawl stops early or writes an empty file."
+        },
+        {
+          "url": "https://acme.dev/docs/search",
+          "path": "/docs/search",
+          "title": "Search the docs | Acme",
+          "section": "Docs",
+          "rank": 23,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 120,
+          "description": "Search every page of the documentation from one box."
+        },
+        {
+          "url": "https://acme.dev/docs/duplicate",
+          "path": "/docs/duplicate",
+          "title": "Install | Acme",
+          "section": "Docs",
+          "rank": 28,
+          "depth": 2,
+          "inFile": false,
+          "wordCount": 380,
+          "description": "A copy of the install page under a second path."
+        }
+      ]
+    },
+    {
+      "name": "Blog",
+      "pages": [
+        {
+          "url": "https://acme.dev/blog",
+          "path": "/blog",
+          "title": "Blog | Acme",
+          "section": "Blog",
+          "rank": 27,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 210,
+          "description": "Notes about what changed in Acme and why it changed."
+        },
+        {
+          "url": "https://acme.dev/blog/hello-world",
+          "path": "/blog/hello-world",
+          "title": "Hello World | Acme",
+          "section": "Blog",
+          "rank": 29,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 520,
+          "description": "The first post, written the week the project started."
+        },
+        {
+          "url": "https://acme.dev/blog/v2-launch",
+          "path": "/blog/v2-launch",
+          "title": "Launching v2 | Acme",
+          "section": "Blog",
+          "rank": 31,
+          "depth": 2,
+          "inFile": true,
+          "wordCount": 880,
+          "description": "What is new in the second version and what it took to get there."
+        },
+        {
+          "url": "https://acme.dev/blog/page/2",
+          "path": "/blog/page/2",
+          "title": "Blog \u2014 Page 2 | Acme",
+          "section": "Blog",
+          "rank": 33,
+          "depth": 3,
+          "inFile": true,
+          "wordCount": 190,
+          "description": "Older posts from the Acme blog."
+        },
+        {
+          "url": "https://acme.dev/blog/tags/release",
+          "path": "/blog/tags/release",
+          "title": "Release notes | Acme",
+          "section": "Blog",
+          "rank": 34,
+          "depth": 3,
+          "inFile": true,
+          "wordCount": 160,
+          "description": "Every post tagged release."
+        }
+      ]
+    },
+    {
+      "name": "Changelog",
+      "pages": [
+        {
+          "url": "https://acme.dev/changelog",
+          "path": "/changelog",
+          "title": "Changelog | Acme",
+          "section": "Changelog",
+          "rank": 32,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 640,
+          "description": "Every released version of Acme, newest first, with what it changed."
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "url": "https://acme.dev/",
+      "path": "/",
+      "title": "Acme",
+      "section": "Acme",
+      "rank": 0,
+      "depth": 0,
+      "inFile": true,
+      "wordCount": 340,
+      "description": "Acme builds small tools that do one job and then stay out of the way of the people using them."
+    },
+    {
+      "url": "https://acme.dev/about",
+      "path": "/about",
+      "title": "About | Acme",
+      "section": "Acme",
+      "rank": 12,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 420,
+      "description": "Who builds Acme, how the company started and where it is going next."
+    },
+    {
+      "url": "https://acme.dev/pricing",
+      "path": "/pricing",
+      "title": "Pricing | Acme",
+      "section": "Acme",
+      "rank": 14,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 260,
+      "description": "What every plan costs, what it includes and when a bigger plan pays off."
+    },
+    {
+      "url": "https://acme.dev/careers",
+      "path": "/careers",
+      "title": "Careers - Acme",
+      "section": "Acme",
+      "rank": 16,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 310,
+      "description": "Open roles on the engineering, design and support teams, with how we hire."
+    },
+    {
+      "url": "https://acme.dev/support",
+      "path": "/support",
+      "title": "Support | Acme",
+      "section": "Acme",
+      "rank": 17,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 180,
+      "description": "We use cookies to make this site work, so please accept them before reading on."
+    },
+    {
+      "url": "https://acme.dev/team",
+      "path": "/team",
+      "title": "The Team \u2013 Acme",
+      "section": "Acme",
+      "rank": 19,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 150
+    },
+    {
+      "url": "https://acme.dev/contact",
+      "path": "/contact",
+      "title": "Contact | Acme",
+      "section": "Acme",
+      "rank": 21,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 28,
+      "description": "Every way to reach the team, by mail, by post or in person."
+    },
+    {
+      "url": "https://acme.dev/privacy",
+      "path": "/privacy",
+      "title": "Privacy Policy | Acme",
+      "section": "Acme",
+      "rank": 24,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 900,
+      "description": "How Acme collects, stores and deletes the personal data of the people who use it."
+    },
+    {
+      "url": "https://acme.dev/terms",
+      "path": "/terms",
+      "title": "Terms of Service | Acme",
+      "section": "Acme",
+      "rank": 25,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 1100,
+      "description": "The contract between Acme and anyone who signs up for one of the plans."
+    },
+    {
+      "url": "https://acme.dev/login",
+      "path": "/login",
+      "title": "Log in | Acme",
+      "section": "Acme",
+      "rank": 26,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 40,
+      "description": "Sign in to the Acme dashboard with an email address and a password."
+    },
+    {
+      "url": "https://acme.dev/noindex",
+      "path": "/noindex",
+      "title": "Internal | Acme",
+      "section": "Acme",
+      "rank": 30,
+      "depth": 1,
+      "inFile": false,
+      "wordCount": 200,
+      "description": "An internal page the crawler fetched but left out of the file."
+    },
+    {
+      "url": "https://acme.dev/docs",
+      "path": "/docs",
+      "title": "Docs | Acme",
+      "section": "Docs",
+      "rank": 5,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 220,
+      "description": "Everything you need to run Acme, from the first install to the last endpoint."
+    },
+    {
+      "url": "https://acme.dev/docs/getting-started",
+      "path": "/docs/getting-started",
+      "title": "Getting Started | Acme",
+      "section": "Docs",
+      "rank": 8,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 640,
+      "description": "Install Acme, point it at a site and read the file it writes, in about five minutes."
+    },
+    {
+      "url": "https://acme.dev/docs/install",
+      "path": "/docs/install",
+      "title": "Install | Acme",
+      "section": "Docs",
+      "rank": 9,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 380,
+      "description": "Install Acme with npm, with Docker or from source, on macOS, Linux and Windows."
+    },
+    {
+      "url": "https://acme.dev/docs/cli",
+      "path": "/docs/cli",
+      "title": "CLI Reference | Acme",
+      "section": "Docs",
+      "rank": 10,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 720,
+      "description": "Every command the CLI understands, with its flags, its defaults and an example of each."
+    },
+    {
+      "url": "https://acme.dev/docs/api",
+      "path": "/docs/api",
+      "title": "API | Acme",
+      "section": "Docs",
+      "rank": 11,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 980,
+      "description": "Every endpoint the service exposes, with the parameters it takes, the shape of what it returns, the errors it can raise and the rate limits that apply to each one of them, written out in full."
+    },
+    {
+      "url": "https://acme.dev/docs/api/crawls",
+      "path": "/docs/api/crawls",
+      "title": "Crawls API | Docs | Acme",
+      "section": "Docs",
+      "rank": 15,
+      "depth": 3,
+      "inFile": true,
+      "wordCount": 500,
+      "description": "The Acme HTTP API and every setting behind it, end to end."
+    },
+    {
+      "url": "https://acme.dev/docs/api/pages",
+      "path": "/docs/api/pages",
+      "title": "Pages API | Docs | Acme",
+      "section": "Docs",
+      "rank": 15,
+      "depth": 3,
+      "inFile": true,
+      "wordCount": 540,
+      "description": "The Acme HTTP API and every setting behind it, end to end."
+    },
+    {
+      "url": "https://acme.dev/docs/config",
+      "path": "/docs/config",
+      "title": "Configuration [beta] | Acme",
+      "section": "Docs",
+      "rank": 18,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 460,
+      "description": "The Acme HTTP API and every setting behind it, end to end."
+    },
+    {
+      "url": "https://acme.dev/docs/faq",
+      "path": "/docs/faq",
+      "title": "FAQ | Acme",
+      "section": "Docs",
+      "rank": 20,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 300,
+      "description": "FAQ"
+    },
+    {
+      "url": "https://acme.dev/docs/troubleshooting",
+      "path": "/docs/troubleshooting",
+      "title": "Troubleshooting | Acme",
+      "section": "Docs",
+      "rank": 22,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 34,
+      "description": "What to do when a crawl stops early or writes an empty file."
+    },
+    {
+      "url": "https://acme.dev/docs/search",
+      "path": "/docs/search",
+      "title": "Search the docs | Acme",
+      "section": "Docs",
+      "rank": 23,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 120,
+      "description": "Search every page of the documentation from one box."
+    },
+    {
+      "url": "https://acme.dev/docs/duplicate",
+      "path": "/docs/duplicate",
+      "title": "Install | Acme",
+      "section": "Docs",
+      "rank": 28,
+      "depth": 2,
+      "inFile": false,
+      "wordCount": 380,
+      "description": "A copy of the install page under a second path."
+    },
+    {
+      "url": "https://acme.dev/blog",
+      "path": "/blog",
+      "title": "Blog | Acme",
+      "section": "Blog",
+      "rank": 27,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 210,
+      "description": "Notes about what changed in Acme and why it changed."
+    },
+    {
+      "url": "https://acme.dev/blog/hello-world",
+      "path": "/blog/hello-world",
+      "title": "Hello World | Acme",
+      "section": "Blog",
+      "rank": 29,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 520,
+      "description": "The first post, written the week the project started."
+    },
+    {
+      "url": "https://acme.dev/blog/v2-launch",
+      "path": "/blog/v2-launch",
+      "title": "Launching v2 | Acme",
+      "section": "Blog",
+      "rank": 31,
+      "depth": 2,
+      "inFile": true,
+      "wordCount": 880,
+      "description": "What is new in the second version and what it took to get there."
+    },
+    {
+      "url": "https://acme.dev/blog/page/2",
+      "path": "/blog/page/2",
+      "title": "Blog \u2014 Page 2 | Acme",
+      "section": "Blog",
+      "rank": 33,
+      "depth": 3,
+      "inFile": true,
+      "wordCount": 190,
+      "description": "Older posts from the Acme blog."
+    },
+    {
+      "url": "https://acme.dev/blog/tags/release",
+      "path": "/blog/tags/release",
+      "title": "Release notes | Acme",
+      "section": "Blog",
+      "rank": 34,
+      "depth": 3,
+      "inFile": true,
+      "wordCount": 160,
+      "description": "Every post tagged release."
+    },
+    {
+      "url": "https://acme.dev/changelog",
+      "path": "/changelog",
+      "title": "Changelog | Acme",
+      "section": "Changelog",
+      "rank": 32,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 640,
+      "description": "Every released version of Acme, newest first, with what it changed."
+    }
+  ],
+  "diff": {
+    "added": 3,
+    "removed": 1,
+    "changed": 2,
+    "samples": ["/blog/v2-launch", "/docs/api"]
+  },
+  "stats": {
+    "fetched": 29,
+    "failed": 1,
+    "skipped": 4
+  }
+}

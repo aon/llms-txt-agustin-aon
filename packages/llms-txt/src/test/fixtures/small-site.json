@@ -1,0 +1,135 @@
+{
+  "host": "tiny.example",
+  "origin": "https://tiny.example",
+  "crawlId": "01FIXTURECRAWL0000000000",
+  "generatedAt": "2026-09-12T10:00:00.000Z",
+  "siteTitle": "Tiny",
+  "sections": [
+    {
+      "name": "Tiny",
+      "pages": [
+        {
+          "url": "https://tiny.example/",
+          "path": "/",
+          "title": "Tiny",
+          "section": "Tiny",
+          "rank": 0,
+          "depth": 0,
+          "inFile": true,
+          "wordCount": 210
+        },
+        {
+          "url": "https://tiny.example/about",
+          "path": "/about",
+          "title": "About",
+          "section": "Tiny",
+          "rank": 11,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 320,
+          "description": "One paragraph about the two people who keep this running."
+        },
+        {
+          "url": "https://tiny.example/notes",
+          "path": "/notes",
+          "title": "Notes",
+          "section": "Tiny",
+          "rank": 13,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 480,
+          "description": "Short notes, published whenever there is something worth writing down."
+        },
+        {
+          "url": "https://tiny.example/projects",
+          "path": "/projects",
+          "title": "Projects",
+          "section": "Tiny",
+          "rank": 15,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 360,
+          "description": "The handful of things built here that other people still use."
+        },
+        {
+          "url": "https://tiny.example/now",
+          "path": "/now",
+          "title": "Now",
+          "section": "Tiny",
+          "rank": 18,
+          "depth": 1,
+          "inFile": true,
+          "wordCount": 140,
+          "description": "What is taking up the time this month."
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "url": "https://tiny.example/",
+      "path": "/",
+      "title": "Tiny",
+      "section": "Tiny",
+      "rank": 0,
+      "depth": 0,
+      "inFile": true,
+      "wordCount": 210
+    },
+    {
+      "url": "https://tiny.example/about",
+      "path": "/about",
+      "title": "About",
+      "section": "Tiny",
+      "rank": 11,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 320,
+      "description": "One paragraph about the two people who keep this running."
+    },
+    {
+      "url": "https://tiny.example/notes",
+      "path": "/notes",
+      "title": "Notes",
+      "section": "Tiny",
+      "rank": 13,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 480,
+      "description": "Short notes, published whenever there is something worth writing down."
+    },
+    {
+      "url": "https://tiny.example/projects",
+      "path": "/projects",
+      "title": "Projects",
+      "section": "Tiny",
+      "rank": 15,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 360,
+      "description": "The handful of things built here that other people still use."
+    },
+    {
+      "url": "https://tiny.example/now",
+      "path": "/now",
+      "title": "Now",
+      "section": "Tiny",
+      "rank": 18,
+      "depth": 1,
+      "inFile": true,
+      "wordCount": 140,
+      "description": "What is taking up the time this month."
+    }
+  ],
+  "diff": {
+    "added": 0,
+    "removed": 0,
+    "changed": 0,
+    "samples": []
+  },
+  "stats": {
+    "fetched": 5,
+    "failed": 0,
+    "skipped": 0
+  }
+}

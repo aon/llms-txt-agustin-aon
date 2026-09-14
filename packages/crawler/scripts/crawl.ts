@@ -1,3 +1,4 @@
+import { writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import {
   DEFAULT_SITE_CONFIG,
@@ -8,13 +9,14 @@ import {
   nowIso,
   TIMING,
 } from "@llms-txt/core";
+import { generateLlmsTxt, OpenRouterEnricher } from "@llms-txt/llms-txt";
 import { crawl, RateLimitedError } from "../dist/index.js";
 
 const USER_AGENT =
   "llms-txt-generator/0.1 (+https://github.com/agustinaon/llms-txt-agustin-aon)";
 
 async function main() {
-  const { url, pageCap, budgetMs, json } = readArgs();
+  const { url, pageCap, budgetMs, json, out, print, ai } = readArgs();
   const { host, origin } = normalizeOrigin(url);
   const store = new MemoryStore();
   const files = new MemoryFileStore();
@@ -64,12 +66,26 @@ async function main() {
     process.exit(2);
   }
 
+  const llmsTxt = await generateLlmsTxt(result.snapshot, {
+    ...enricherFromEnv(ai),
+    onEnrichError: (error) => {
+      process.stderr.write(
+        `The model failed, writing the file without it: ${String(error)}\n`,
+      );
+    },
+  });
+  if (out) {
+    await writeFile(out, llmsTxt);
+    process.stderr.write(`Wrote ${out}\n`);
+  }
+
   if (json) {
     process.stdout.write(`${JSON.stringify(result.snapshot, null, 2)}\n`);
     return;
   }
   const rows = await store.listPages(host);
   printSummary(result.snapshot, rows, elapsed);
+  if (print) process.stdout.write(`\n${llmsTxt}`);
 }
 
 function readArgs() {
@@ -79,12 +95,15 @@ function readArgs() {
       pages: { type: "string", short: "p" },
       budget: { type: "string", short: "b" },
       json: { type: "boolean", default: false },
+      out: { type: "string", short: "o" },
+      print: { type: "boolean", default: false },
+      "no-ai": { type: "boolean", default: false },
     },
   });
   const url = positionals[0];
   if (!url) {
     process.stderr.write(
-      "Usage: pnpm --filter @llms-txt/crawler crawl <url> [--pages N] [--budget SECONDS] [--json]\n",
+      "Usage: pnpm --filter @llms-txt/crawler crawl <url> [--pages N] [--budget SECONDS] [--json] [--out FILE] [--print] [--no-ai]\n",
     );
     process.exit(1);
   }
@@ -97,6 +116,24 @@ function readArgs() {
       ? Number.parseInt(values.budget, 10) * 1000
       : TIMING.workerBudgetMs,
     json: values.json,
+    out: values.out,
+    print: values.print,
+    ai: !values["no-ai"],
+  };
+}
+
+function enricherFromEnv(ai: boolean) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!ai) return {};
+  if (!apiKey) {
+    process.stderr.write(
+      "No OPENROUTER_API_KEY set, writing the file without the model.\n",
+    );
+    return {};
+  }
+  const model = process.env.OPENROUTER_MODEL;
+  return {
+    enricher: new OpenRouterEnricher({ apiKey, ...(model ? { model } : {}) }),
   };
 }
 

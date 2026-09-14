@@ -1,5 +1,5 @@
 {
-  "name": "@llms-txt/crawler",
+  "name": "@llms-txt/llms-txt",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -15,15 +15,14 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "crawl": "pnpm -w exec turbo run build --filter=@llms-txt/crawler --filter=@llms-txt/llms-txt && node --env-file-if-exists=.env scripts/crawl.ts"
+    "test": "vitest run"
   },
   "dependencies": {
     "@llms-txt/core": "workspace:*",
-    "cheerio": "1.2.0"
+    "openai": "7.15.0",
+    "zod": "4.5.4"
   },
   "devDependencies": {
-    "@llms-txt/llms-txt": "workspace:*",
     "@types/node": "24.13.4",
     "typescript": "7.0.2",
     "vitest": "5.0.0"

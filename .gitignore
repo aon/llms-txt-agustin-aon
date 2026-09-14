@@ -26,3 +26,6 @@ coverage/
 
 # next.js generated
 next-env.d.ts
+
+# skills
+.impeccable/

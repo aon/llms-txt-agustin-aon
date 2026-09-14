@@ -1,0 +1,42 @@
+# Acme
+
+> Acme builds small tools that do one job and then stay out of the way of the people using them.
+
+## Acme
+
+- [Home](https://acme.dev/)
+- [About](https://acme.dev/about): Who builds Acme, how the company started and where it is going next.
+- [Pricing](https://acme.dev/pricing): What every plan costs, what it includes and when a bigger plan pays off.
+- [Careers](https://acme.dev/careers): Open roles on the engineering, design and support teams, with how we hire.
+- [Support](https://acme.dev/support)
+- [The Team](https://acme.dev/team)
+- [Changelog](https://acme.dev/changelog): Every released version of Acme, newest first, with what it changed.
+
+## Docs
+
+- [Docs](https://acme.dev/docs): Everything you need to run Acme, from the first install to the last endpoint.
+- [Getting Started](https://acme.dev/docs/getting-started): Install Acme, point it at a site and read the file it writes, in about five minutes.
+- [Install](https://acme.dev/docs/install): Install Acme with npm, with Docker or from source, on macOS, Linux and Windows.
+- [CLI Reference](https://acme.dev/docs/cli): Every command the CLI understands, with its flags, its defaults and an example of each.
+- [API](https://acme.dev/docs/api): Every endpoint the service exposes, with the parameters it takes, the shape of what it returns, the errors it can raise and the rate limits that apply to each one of them, written out in full.
+- [Crawls API](https://acme.dev/docs/api/crawls)
+- [Pages API](https://acme.dev/docs/api/pages)
+- [Configuration \[beta\]](https://acme.dev/docs/config)
+- [FAQ](https://acme.dev/docs/faq)
+
+## Blog
+
+- [Blog](https://acme.dev/blog): Notes about what changed in Acme and why it changed.
+- [Hello World](https://acme.dev/blog/hello-world): The first post, written the week the project started.
+- [Launching v2](https://acme.dev/blog/v2-launch): What is new in the second version and what it took to get there.
+
+## Optional
+
+- [Contact](https://acme.dev/contact): Every way to reach the team, by mail, by post or in person.
+- [Troubleshooting](https://acme.dev/docs/troubleshooting): What to do when a crawl stops early or writes an empty file.
+- [Search the docs](https://acme.dev/docs/search): Search every page of the documentation from one box.
+- [Privacy Policy](https://acme.dev/privacy): How Acme collects, stores and deletes the personal data of the people who use it.
+- [Terms of Service](https://acme.dev/terms): The contract between Acme and anyone who signs up for one of the plans.
+- [Log in](https://acme.dev/login): Sign in to the Acme dashboard with an email address and a password.
+- [Blog — Page 2](https://acme.dev/blog/page/2): Older posts from the Acme blog.
+- [Release notes](https://acme.dev/blog/tags/release): Every post tagged release.

@@ -1,0 +1,9 @@
+# Tiny
+
+## Tiny
+
+- [Home](https://tiny.example/)
+- [About](https://tiny.example/about): One paragraph about the two people who keep this running.
+- [Notes](https://tiny.example/notes): Short notes, published whenever there is something worth writing down.
+- [Projects](https://tiny.example/projects): The handful of things built here that other people still use.
+- [Now](https://tiny.example/now): What is taking up the time this month.
