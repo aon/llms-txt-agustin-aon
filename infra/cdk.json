@@ -1,7 +1,13 @@
 {
   "app": "node bin/app.ts",
+  "build": "pnpm -w exec turbo run build --filter=@llms-txt/infra^... --ui=stream --output-logs=errors-only",
   "watch": {
-    "include": ["bin/**", "lib/**", "../apps/worker/src/**"],
+    "include": [
+      "bin/**",
+      "lib/**",
+      "../apps/worker/src/**",
+      "../packages/*/src/**"
+    ],
     "exclude": ["cdk.out"]
   },
   "context": {
