@@ -13,6 +13,10 @@ export interface CrawlSnapshot {
   generatedAt: string;
   siteTitle: string;
   siteDescription?: string;
+  /** The title suffix most pages repeat, when the crawler found one. */
+  brand?: string;
+  /** Main text of the landing page, what the enricher reads about the site. */
+  landingText?: string;
   /** Ordered by importance; the pages inside one are sorted by rank. */
   sections: SnapshotSection[];
   /** Every page of the crawl, section order first, then rank. */

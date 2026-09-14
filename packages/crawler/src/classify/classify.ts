@@ -10,6 +10,9 @@ export const RANK_WEIGHTS = Object.freeze({
   sitemap: 2,
 });
 
+/** A first segment this many pages share is a section, nav menu or not. */
+export const MIN_SEGMENT_PAGES = 2;
+
 /** Kept as their own section: "Docs" beats folding them into the site name. */
 export const SECTION_SEGMENTS: ReadonlySet<string> = new Set([
   "docs",
@@ -58,9 +61,10 @@ export function classifyPages(
   options: ClassifyOptions,
 ) {
   const winners = duplicateWinners(pages);
+  const crowded = crowdedSegments(pages);
   const classified = pages.map((page) => ({
     path: page.path,
-    section: sectionOf(page, options.siteName),
+    section: sectionOf(page, options.siteName, crowded),
     rank: rankOf(page),
     inFile: isInFile(page, winners),
   }));
@@ -97,12 +101,32 @@ function capitalize(word: string) {
   return ACRONYMS[lower] ?? lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
-function sectionOf(page: ClassifiablePage, siteName: string) {
+function sectionOf(
+  page: ClassifiablePage,
+  siteName: string,
+  crowded: ReadonlySet<string>,
+) {
   const first = firstSegment(page.path);
   if (!first) return siteName;
-  if (SECTION_SEGMENTS.has(first.toLowerCase())) return humanize(first);
+  const key = first.toLowerCase();
+  if (SECTION_SEGMENTS.has(key) || crowded.has(key)) return humanize(first);
   if (page.navLinked && page.depth <= 1) return siteName;
   return humanize(first) || siteName;
+}
+
+/** A menu that lists every feature page must not flatten them into the site section. */
+function crowdedSegments(pages: readonly ClassifiablePage[]) {
+  const counts = new Map<string, number>();
+  for (const page of pages) {
+    if (page.status !== "fetched") continue;
+    const first = firstSegment(page.path)?.toLowerCase();
+    if (first) counts.set(first, (counts.get(first) ?? 0) + 1);
+  }
+  const crowded = new Set<string>();
+  for (const [segment, count] of counts) {
+    if (count >= MIN_SEGMENT_PAGES) crowded.add(segment);
+  }
+  return crowded;
 }
 
 function rankOf(page: ClassifiablePage) {

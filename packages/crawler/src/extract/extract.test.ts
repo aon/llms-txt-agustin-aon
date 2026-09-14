@@ -108,6 +108,12 @@ describe("extract", () => {
     expect(page).toMatchObject({ mainText: "", wordCount: 0, links: [] });
     expect(page.title).toBeUndefined();
   });
+
+  it("reads the main text without the chrome", () => {
+    expect(extract(FULL, { url: URL_ }).mainText).toBe(
+      "Intro The body of the page. API Elsewhere Also this.",
+    );
+  });
 });
 
 const FULL = `<!doctype html><html lang="en"><head>

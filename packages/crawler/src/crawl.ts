@@ -20,7 +20,7 @@ import { type FetchOutcome, fetchPage } from "./fetch/fetch-page.js";
 import { HostLimiter } from "./fetch/limiter.js";
 import { Frontier } from "./frontier/frontier.js";
 import { normalizeLink } from "./frontier/normalize.js";
-import { buildSnapshot, siteNameFrom } from "./snapshot.js";
+import { buildSnapshot, landingOf, siteNameFrom } from "./snapshot.js";
 
 /** Never hammer a host faster than this, whatever robots.txt allows. */
 export const MIN_REQUEST_SPACING_MS = 1000;
@@ -449,9 +449,10 @@ async function writeSnapshot(
   await store.updateCrawl(context.host, context.crawlId, {
     phase: "generating",
   });
-  const [sitePages, crawlRow] = await Promise.all([
+  const [sitePages, crawlRow, landingText] = await Promise.all([
     store.listPages(context.host),
     store.getCrawl(context.host, context.crawlId),
+    readLandingText(context, classified.pages),
   ]);
   await retireMissingPages(context, sitePages);
   const snapshot = buildSnapshot({
@@ -463,12 +464,21 @@ async function writeSnapshot(
     sections: classified.sections,
     startedAt: context.startedAt,
     changed: crawlRow?.pagesChanged ?? 0,
+    landingText,
   });
 
   const key = snapshotKey(context.host, context.crawlId);
   await files.putJson(key, snapshot);
   await store.updateCrawl(context.host, context.crawlId, { snapshotKey: key });
   return snapshot;
+}
+
+/** Read back from S3: the landing may have been fetched by an earlier invocation. */
+async function readLandingText(context: CrawlContext, pages: readonly Page[]) {
+  const landing = landingOf(pages);
+  if (!landing?.htmlKey) return "";
+  const html = await context.deps.files.getHtmlGz(landing.htmlKey);
+  return html ? extract(html, { url: landing.url }).mainText : "";
 }
 
 /** A page this crawl never reached is gone, so it leaves the file. */

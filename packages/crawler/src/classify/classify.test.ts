@@ -25,6 +25,27 @@ describe("classifyPages: sections", () => {
     expect(sectionOf(page({ path: "/api/v2", depth: 2 }))).toBe("API");
   });
 
+  it("gives a segment several pages share its own section, nav or not", () => {
+    const { pages } = classifyPages(
+      [
+        page({ path: "/", depth: 0 }),
+        page({ path: "/about", depth: 1, navLinked: true }),
+        page({ path: "/features", depth: 1, navLinked: true }),
+        page({ path: "/features/agenda", depth: 1, navLinked: true }),
+        page({ path: "/features/alerts", depth: 2 }),
+      ],
+      SITE,
+    );
+    const sections = Object.fromEntries(pages.map((p) => [p.path, p.section]));
+    expect(sections).toEqual({
+      "/": "Acme",
+      "/about": "Acme",
+      "/features": "Features",
+      "/features/agenda": "Features",
+      "/features/alerts": "Features",
+    });
+  });
+
   it("humanizes any other first segment", () => {
     expect(sectionOf(page({ path: "/getting-started/x", depth: 2 }))).toBe(
       "Getting Started",

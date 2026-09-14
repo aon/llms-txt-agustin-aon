@@ -141,8 +141,20 @@ describe("crawl: one pass over a whole site", () => {
       siteTitle: "Acme",
       siteDescription:
         "Acme builds small tools that do one job and stay out of the way.",
+      brand: "Acme",
       stats: { fetched: 12, failed: 0, skipped: 3 },
     });
+  });
+
+  it("carries the landing's main text into the snapshot", async () => {
+    const site = await harness();
+    const result = await site.run();
+    if (!result.finished) throw new Error("the crawl did not finish");
+
+    expect(result.snapshot.landingText).toContain(
+      "Acme builds small tools that do one job",
+    );
+    expect(result.snapshot.pages[0]).not.toHaveProperty("landingText");
   });
 
   it("counts what it did on the crawl row", async () => {

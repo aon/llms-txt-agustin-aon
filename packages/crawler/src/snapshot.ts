@@ -8,7 +8,18 @@ import type {
 import { humanize } from "./classify/classify.js";
 
 export const MAX_DIFF_SAMPLES = 10;
+/** Enough of a landing for a model to describe the site, not a full-text dump. */
+export const MAX_LANDING_TEXT_LENGTH = 6000;
 const TITLE_SEPARATORS = /\s+[|–—-]\s+/;
+/** A tagline hangs off the site name by a colon as often as by a pipe. */
+const TITLE_LEAD_SEPARATORS = /\s+[|–—-]\s+|:\s+/;
+const GENERIC_LEADS: ReadonlySet<string> = new Set([
+  "home",
+  "welcome",
+  "homepage",
+  "index",
+  "start",
+]);
 
 export interface BuildSnapshotInput {
   site: Pick<Site, "host" | "origin">;
@@ -19,6 +30,7 @@ export interface BuildSnapshotInput {
   sections: readonly string[];
   startedAt: string;
   changed: number;
+  landingText?: string;
 }
 
 /** Everything here is derived: the crawl decided section, rank and inFile. */
@@ -33,14 +45,15 @@ export function buildSnapshot(input: BuildSnapshotInput) {
     if (pages.length > 0) sections.push({ name, pages });
   }
 
-  const home = fetched.find((page) => page.path === "/");
+  const home = landingOf(fetched);
   const titles = fetched.flatMap((page) => (page.title ? [page.title] : []));
+  const brand = repeatedBrand(titles);
   const snapshot: CrawlSnapshot = {
     host: input.site.host,
     origin: input.site.origin,
     crawlId: input.crawlId,
     generatedAt: input.generatedAt,
-    siteTitle: siteTitleFrom(home?.title, titles, input.site.host),
+    siteTitle: siteName(brand, home?.title, input.site.host),
     sections,
     pages: byRank.sort(
       (a, b) =>
@@ -51,17 +64,26 @@ export function buildSnapshot(input: BuildSnapshotInput) {
     stats: buildStats(input.pages),
   };
   if (home?.description) snapshot.siteDescription = home.description;
+  if (brand) snapshot.brand = brand;
+  const landingText = headOf(input.landingText ?? "", MAX_LANDING_TEXT_LENGTH);
+  if (landingText) snapshot.landingText = landingText;
   return snapshot;
+}
+
+/** The root, or wherever the root redirected to on a site that lives under /en. */
+export function landingOf<T extends Pick<Page, "path" | "depth" | "status">>(
+  pages: readonly T[],
+) {
+  const fetched = pages.filter((page) => page.status === "fetched");
+  return (
+    fetched.find((page) => page.path === "/") ??
+    fetched.find((page) => page.depth === 0)
+  );
 }
 
 export function siteNameFrom(pages: readonly Page[], host: string) {
   const titles = pages.flatMap((page) => (page.title ? [page.title] : []));
-  const brand = repeatedBrand(titles);
-  if (brand) return brand;
-  const home = pages.find((page) => page.path === "/")?.title;
-  const lead = home?.split(TITLE_SEPARATORS)[0]?.trim();
-  if (lead) return lead;
-  return humanize(host.replace(/^www\./, "").split(".")[0] ?? host) || host;
+  return siteName(repeatedBrand(titles), landingOf(pages)?.title, host);
 }
 
 function buildDiff(input: BuildSnapshotInput) {
@@ -118,6 +140,13 @@ function toSnapshotPage(page: Page) {
   return snapshotPage;
 }
 
+function headOf(text: string, max: number) {
+  if (text.length <= max) return text;
+  const head = text.slice(0, max);
+  const cut = head.lastIndexOf(" ");
+  return (cut > 0 ? head.slice(0, cut) : head).trimEnd();
+}
+
 function fallbackTitle(path: string) {
   const segments = path.split("?")[0]?.split("/").filter(Boolean) ?? [];
   return humanize(segments.at(-1) ?? "") || path;
@@ -131,15 +160,30 @@ function compareSnapshotRank(a: SnapshotPage, b: SnapshotPage) {
   return a.rank - b.rank || a.path.localeCompare(b.path);
 }
 
-function siteTitleFrom(
+function siteName(
+  brand: string | undefined,
   homeTitle: string | undefined,
-  titles: readonly string[],
   host: string,
 ) {
-  const brand = repeatedBrand(titles);
-  const title = homeTitle ?? brand ?? host;
-  if (!brand) return title;
-  return stripBrand(title, brand) || brand;
+  if (brand) return brand;
+  const lead = leadSegment(homeTitle);
+  if (lead) return lead;
+  return humanize(host.replace(/^www\./, "").split(".")[0] ?? host) || host;
+}
+
+/** The name is the segment the tagline hangs off, whichever end it sits at. */
+function leadSegment(title: string | undefined) {
+  const parts =
+    title
+      ?.split(TITLE_LEAD_SEPARATORS)
+      .map((part) => part.trim())
+      .filter(Boolean) ?? [];
+  const lead = parts[0];
+  if (!lead) return undefined;
+  if (parts.length > 1 && GENERIC_LEADS.has(lead.toLowerCase())) {
+    return parts.at(-1);
+  }
+  return lead;
 }
 
 function repeatedBrand(titles: readonly string[]) {
@@ -159,10 +203,4 @@ function repeatedBrand(titles: readonly string[]) {
     }
   }
   return brand;
-}
-
-function stripBrand(title: string, brand: string) {
-  const parts = title.split(TITLE_SEPARATORS);
-  if (parts.length < 2 || parts.at(-1)?.trim() !== brand) return title;
-  return parts.slice(0, -1).join(" - ").trim();
 }
