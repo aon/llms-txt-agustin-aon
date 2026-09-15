@@ -4,6 +4,7 @@ import * as amplify from "@aws-cdk/aws-amplify-alpha";
 import { RESOURCE_ENV, TABLE, TIMING } from "@llms-txt/core";
 import { WORKER_ENV } from "@llms-txt/worker";
 import {
+  ArnFormat,
   CfnOutput,
   Duration,
   RemovalPolicy,
@@ -37,7 +38,7 @@ const WEB_SOURCE = {
   tokenSecret: "llms-txt/github-token",
 };
 const WEB_APP_ROOT = "apps/web";
-/** DNS lives outside Route 53, so the certificate and subdomain records are added by hand from the outputs. */
+/** DNS lives outside Route 53, so the certificate and subdomain records are added by hand; the subdomain target only exists after deploy, in get-domain-association. */
 const WEB_DOMAIN = { name: "agustinaon.com", prefix: "llms-txt" };
 const NODE_VERSION = "24";
 
@@ -202,6 +203,30 @@ export class LlmsTxtStack extends Stack {
         [RESOURCE_ENV.queueUrl]: this.queue.queueUrl,
       },
     });
+    // Without this the SSR runtime writes no logs anywhere.
+    this.webApp.grantPrincipal.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ],
+        resources: [
+          this.formatArn({
+            service: "logs",
+            resource: "log-group",
+            resourceName: "/aws/amplify/*",
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          }),
+        ],
+      }),
+    );
+    this.webApp.grantPrincipal.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ["logs:DescribeLogGroups"],
+        resources: ["*"],
+      }),
+    );
     this.webBranch = this.webApp.addBranch(WEB_SOURCE.branch, {
       stage: "PRODUCTION",
     });
@@ -223,9 +248,6 @@ export class LlmsTxtStack extends Stack {
     });
     new CfnOutput(this, "WebDomainUrl", {
       value: `https://${WEB_DOMAIN.prefix}.${WEB_DOMAIN.name}`,
-    });
-    new CfnOutput(this, "WebDomainCname", {
-      value: `${WEB_DOMAIN.prefix} CNAME ${this.webBranch.branchName}.${this.webApp.defaultDomain}`,
     });
     new CfnOutput(this, "WebCertificateRecord", {
       value: webDomain.certificateRecord,

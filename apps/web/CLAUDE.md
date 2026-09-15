@@ -44,8 +44,10 @@ repo, create a classic PAT with the `admin:repo_hook` scope, and store it as
 the `llms-txt/github-token` secret in Secrets Manager. The stack's `WebUrl`
 output is the Amplify URL. The site also answers on `llms-txt.agustinaon.com`
 once two records exist in Cloudflare, both DNS-only: the certificate
-validation CNAME in the `WebCertificateRecord` output and the subdomain CNAME
-in `WebDomainCname`. The build runs from the repo root with pnpm's hoisted
+validation CNAME in the `WebCertificateRecord` output, and `llms-txt` as a
+CNAME to the CloudFront host Amplify assigns, read with
+`aws amplify get-domain-association --app-id <id> --domain-name agustinaon.com`
+(the `dnsRecord` of the subdomain). The build runs from the repo root with pnpm's hoisted
 linker, and the table, bucket and queue names reach the server through
 `.env.production`, written during the build.
 
