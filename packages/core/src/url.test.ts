@@ -41,6 +41,15 @@ describe("normalizeOrigin", () => {
     ).toBe("https://example.com");
   });
 
+  it("drops a leading www from the host and keeps it in the origin", () => {
+    expect(normalizeOrigin("https://www.example.com/")).toEqual({
+      host: "example.com",
+      origin: "https://www.example.com",
+    });
+    expect(normalizeOrigin("WWW.Example.com").host).toBe("example.com");
+    expect(normalizeOrigin("www2.example.com").host).toBe("www2.example.com");
+  });
+
   it("trims whitespace", () => {
     expect(normalizeOrigin("  example.com  ").host).toBe("example.com");
   });

@@ -4,9 +4,11 @@ import { z } from "zod";
 /**
  * User input to a site origin. Defaults to https when no scheme is given,
  * lowercases the host, strips default ports, and drops everything after the
- * host. Requires a public domain name: localhost and IP addresses are
- * rejected. Usable directly in a form; `normalizeOrigin` wraps it for
- * callers that prefer an exception.
+ * host. The host drops a leading www so both spellings name one site; the
+ * origin keeps it, so the crawl enters where the user pointed. Requires a
+ * public domain name: localhost and IP addresses are rejected. Usable
+ * directly in a form; `normalizeOrigin` wraps it for callers that prefer an
+ * exception.
  */
 export const originSchema = z
   .string()
@@ -18,7 +20,7 @@ export const originSchema = z
   .refine((url) => url.username === "" && url.password === "", {
     message: "Credentials in the URL are not supported",
   })
-  .transform((url) => ({ host: url.host, origin: url.origin }));
+  .transform((url) => ({ host: bareHost(url.host), origin: url.origin }));
 
 export type NormalizedOrigin = z.output<typeof originSchema>;
 
