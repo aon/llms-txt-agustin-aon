@@ -1,9 +1,8 @@
 import { parseArgs } from "node:util";
 import {
   DEFAULT_SITE_CONFIG,
-  newCrawlId,
+  enqueueCrawl,
   normalizeOrigin,
-  nowIso,
 } from "@llms-txt/core";
 import { deployedStack } from "./stack.ts";
 
@@ -24,21 +23,10 @@ async function main() {
     });
   }
 
-  const crawlId = newCrawlId();
-  await store.putCrawl(host, {
-    crawlId,
-    status: "queued",
-    reason: "user",
-    phase: "discovery",
-    invocations: 0,
-    pagesQueued: 0,
-    pagesFetched: 0,
-    pagesFailed: 0,
-    pagesChanged: 0,
-    createdAt: nowIso(),
-  });
-  await store.updateSite(host, { latestCrawlId: crawlId });
-  await queue.enqueue({ siteId: host, crawlId, reason: "user" });
+  const { crawlId } = await enqueueCrawl(
+    { store, queue },
+    { host, reason: "user", now: new Date() },
+  );
 
   process.stdout.write(`Enqueued crawl ${crawlId} for ${origin}\n`);
   process.stdout.write(

@@ -1,5 +1,7 @@
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { TABLE, TIMING } from "@llms-txt/core";
+import * as amplify from "@aws-cdk/aws-amplify-alpha";
+import { RESOURCE_ENV, TABLE, TIMING } from "@llms-txt/core";
 import { WORKER_ENV } from "@llms-txt/worker";
 import {
   CfnOutput,
@@ -9,7 +11,9 @@ import {
   Stack,
   type StackProps,
 } from "aws-cdk-lib";
+import * as codebuild from "aws-cdk-lib/aws-codebuild";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
@@ -25,6 +29,17 @@ import type { Construct } from "constructs";
 const REMOVAL_POLICY = RemovalPolicy.DESTROY;
 /** How often the monitor looks for sites due for a re-crawl. */
 const SWEEP_EVERY = Duration.hours(24);
+/** Amplify pulls the web app from this GitHub branch; the secret holds a PAT with admin:repo_hook. */
+const WEB_SOURCE = {
+  owner: "aon",
+  repository: "llms-txt-agustin-aon",
+  branch: "main",
+  tokenSecret: "llms-txt/github-token",
+};
+const WEB_APP_ROOT = "apps/web";
+/** DNS lives outside Route 53, so the certificate and subdomain records are added by hand from the outputs. */
+const WEB_DOMAIN = { name: "agustinaon.com", prefix: "llms-txt" };
+const NODE_VERSION = "24";
 
 export class LlmsTxtStack extends Stack {
   readonly table: dynamodb.Table;
@@ -35,6 +50,8 @@ export class LlmsTxtStack extends Stack {
   readonly crawlFunction: nodejs.NodejsFunction;
   readonly monitorFunction: nodejs.NodejsFunction;
   readonly deadLetterFunction: nodejs.NodejsFunction;
+  readonly webApp: amplify.App;
+  readonly webBranch: amplify.Branch;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -159,6 +176,40 @@ export class LlmsTxtStack extends Stack {
     });
 
     // ------------------------------------------------------------------------
+    // Amplify Hosting (web app)
+    // ------------------------------------------------------------------------
+    const webComputeRole = new iam.Role(this, "WebComputeRole", {
+      assumedBy: new iam.ServicePrincipal("amplify.amazonaws.com"),
+      description: "Runtime role of the web app's server-side rendering",
+    });
+    this.table.grantReadWriteData(webComputeRole);
+    this.bucket.grantRead(webComputeRole);
+    this.queue.grantSendMessages(webComputeRole);
+
+    this.webApp = new amplify.App(this, "WebApp", {
+      platform: amplify.Platform.WEB_COMPUTE,
+      sourceCodeProvider: new GitHubAppSource({
+        owner: WEB_SOURCE.owner,
+        repository: WEB_SOURCE.repository,
+        accessToken: SecretValue.secretsManager(WEB_SOURCE.tokenSecret),
+      }),
+      computeRole: webComputeRole,
+      buildSpec: codebuild.BuildSpec.fromObjectToYaml(webBuildSpec()),
+      environmentVariables: {
+        AMPLIFY_MONOREPO_APP_ROOT: WEB_APP_ROOT,
+        [RESOURCE_ENV.tableName]: this.table.tableName,
+        [RESOURCE_ENV.bucketName]: this.bucket.bucketName,
+        [RESOURCE_ENV.queueUrl]: this.queue.queueUrl,
+      },
+    });
+    this.webBranch = this.webApp.addBranch(WEB_SOURCE.branch, {
+      stage: "PRODUCTION",
+    });
+    const webDomain = this.webApp.addDomain(WEB_DOMAIN.name, {
+      subDomains: [{ branch: this.webBranch, prefix: WEB_DOMAIN.prefix }],
+    });
+
+    // ------------------------------------------------------------------------
     // Outputs
     // ------------------------------------------------------------------------
     new CfnOutput(this, "TableName", { value: this.table.tableName });
@@ -166,6 +217,18 @@ export class LlmsTxtStack extends Stack {
     new CfnOutput(this, "QueueUrl", { value: this.queue.queueUrl });
     new CfnOutput(this, "OpenRouterSecretArn", {
       value: this.openRouterSecret.secretArn,
+    });
+    new CfnOutput(this, "WebUrl", {
+      value: `https://${this.webBranch.branchName}.${this.webApp.defaultDomain}`,
+    });
+    new CfnOutput(this, "WebDomainUrl", {
+      value: `https://${WEB_DOMAIN.prefix}.${WEB_DOMAIN.name}`,
+    });
+    new CfnOutput(this, "WebDomainCname", {
+      value: `${WEB_DOMAIN.prefix} CNAME ${this.webBranch.branchName}.${this.webApp.defaultDomain}`,
+    });
+    new CfnOutput(this, "WebCertificateRecord", {
+      value: webDomain.certificateRecord,
     });
   }
 
@@ -213,4 +276,74 @@ function handlerEntry(name: string) {
   return fileURLToPath(
     new URL(`../../apps/worker/src/handlers/${name}.ts`, import.meta.url),
   );
+}
+
+/** The Amplify GitHub App flow: the app is installed on the repo and the PAT only lets Amplify register its webhook. */
+class GitHubAppSource implements amplify.ISourceCodeProvider {
+  readonly #props: GitHubAppSourceProps;
+
+  constructor(props: GitHubAppSourceProps) {
+    this.#props = props;
+  }
+
+  bind(): amplify.SourceCodeProviderConfig {
+    return {
+      repository: `https://github.com/${this.#props.owner}/${this.#props.repository}`,
+      accessToken: this.#props.accessToken,
+    };
+  }
+}
+
+interface GitHubAppSourceProps {
+  owner: string;
+  repository: string;
+  accessToken: SecretValue;
+}
+
+function webBuildSpec() {
+  const runtimeEnv = Object.values(RESOURCE_ENV)
+    .map((name) => `-e '^${name}='`)
+    .join(" ");
+  return {
+    version: 1,
+    applications: [
+      {
+        appRoot: WEB_APP_ROOT,
+        frontend: {
+          buildPath: "/",
+          phases: {
+            preBuild: {
+              commands: [
+                `nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}`,
+                `npm install -g ${packageManager()}`,
+                // Amplify's Next.js bundler cannot follow pnpm's isolated layout; pnpm 12 reads the linker from the workspace file, Amplify's monorepo detection from .npmrc.
+                "echo node-linker=hoisted > .npmrc",
+                "printf '\\nnodeLinker: hoisted\\n' >> pnpm-workspace.yaml",
+                "pnpm install --frozen-lockfile",
+              ],
+            },
+            build: {
+              commands: [
+                // Build-time variables reach the SSR runtime only through Next's env file.
+                `env | grep ${runtimeEnv} >> ${WEB_APP_ROOT}/.env.production`,
+                "pnpm turbo run build --filter=@llms-txt/web",
+              ],
+            },
+          },
+          artifacts: {
+            baseDirectory: `${WEB_APP_ROOT}/.next`,
+            files: ["**/*"],
+          },
+          cache: { paths: ["node_modules/**/*"] },
+        },
+      },
+    ],
+  };
+}
+
+function packageManager() {
+  const root: { packageManager: string } = createRequire(import.meta.url)(
+    "../../package.json",
+  );
+  return root.packageManager;
 }

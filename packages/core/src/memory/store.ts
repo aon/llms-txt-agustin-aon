@@ -1,7 +1,7 @@
 import { DEFAULT_SITE_CONFIG } from "../defaults.js";
 import type { Crawl } from "../entities/crawl.js";
 import type { Page, PageStatus } from "../entities/page.js";
-import type { Site } from "../entities/site.js";
+import { nextRunAfter, type Site } from "../entities/site.js";
 import { NotFoundError } from "../store/errors.js";
 import type {
   CrawlCounters,
@@ -256,10 +256,11 @@ export class MemoryStore implements Store {
     site.lastDoneCrawlId = crawlId;
     site.currentLlmsTxtKey = input.llmsTxtKey;
     if (site.lease?.crawlId === crawlId) delete site.lease;
-    if (input.nextRunAt === null) {
+    const nextRunAt = nextRunAfter(site, new Date(input.finishedAt));
+    if (nextRunAt === null) {
       delete site.nextRunAt;
     } else {
-      site.nextRunAt = input.nextRunAt;
+      site.nextRunAt = nextRunAt;
     }
     site.updatedAt = nowIso();
   }

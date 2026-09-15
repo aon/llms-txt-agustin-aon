@@ -12,6 +12,7 @@
     "destroy": "cdk destroy"
   },
   "devDependencies": {
+    "@aws-cdk/aws-amplify-alpha": "2.269.0-alpha.0",
     "@llms-txt/core": "workspace:*",
     "@llms-txt/worker": "workspace:*",
     "@types/node": "24.13.4",

@@ -1,4 +1,4 @@
-import { TABLE, TIMING } from "@llms-txt/core";
+import { RESOURCE_ENV, TABLE, TIMING } from "@llms-txt/core";
 import { WORKER_ENV } from "@llms-txt/worker";
 import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
@@ -76,6 +76,29 @@ describe("LlmsTxtStack", () => {
   it("sweeps for due sites once a day", () => {
     template.hasResourceProperties("AWS::Scheduler::Schedule", {
       ScheduleExpression: "rate(1 day)",
+    });
+  });
+
+  it("hosts the web app on Amplify SSR compute with the stack's resource names", () => {
+    template.hasResourceProperties("AWS::Amplify::App", {
+      Platform: "WEB_COMPUTE",
+      Repository: "https://github.com/aon/llms-txt-agustin-aon",
+      ComputeRoleArn: Match.anyValue(),
+      EnvironmentVariables: Match.arrayWith([
+        { Name: "AMPLIFY_MONOREPO_APP_ROOT", Value: "apps/web" },
+        { Name: RESOURCE_ENV.tableName, Value: Match.anyValue() },
+        { Name: RESOURCE_ENV.bucketName, Value: Match.anyValue() },
+        { Name: RESOURCE_ENV.queueUrl, Value: Match.anyValue() },
+      ]),
+      BuildSpec: Match.stringLikeRegexp("appRoot: apps/web"),
+    });
+    template.hasResourceProperties("AWS::Amplify::Branch", {
+      BranchName: "main",
+      Stage: "PRODUCTION",
+    });
+    template.hasResourceProperties("AWS::Amplify::Domain", {
+      DomainName: "agustinaon.com",
+      SubDomainSettings: [{ Prefix: "llms-txt", BranchName: Match.anyValue() }],
     });
   });
 

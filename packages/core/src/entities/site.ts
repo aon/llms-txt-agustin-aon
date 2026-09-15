@@ -49,6 +49,13 @@ export interface Lease {
 
 export const SCHEDULE_PARTITION = "SCHEDULE";
 
+/** The next scheduled run for a site, or null while monitoring is off. */
+export function nextRunAfter(site: Pick<Site, "config">, from: Date) {
+  const hours = site.config.scheduleHours;
+  if (!hours) return null;
+  return new Date(from.getTime() + hours * 60 * 60 * 1000).toISOString();
+}
+
 export function sitePk(host: string) {
   return `SITE#${host}`;
 }

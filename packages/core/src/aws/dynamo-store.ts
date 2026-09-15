@@ -1,6 +1,7 @@
 import {
   ConditionalCheckFailedException,
   type DynamoDBClient,
+  TransactionCanceledException,
 } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
@@ -20,6 +21,7 @@ import type { Page, PageStatus } from "../entities/page.js";
 import { pageGsi1Keys, pageKeys } from "../entities/page.js";
 import type { Site } from "../entities/site.js";
 import {
+  nextRunAfter,
   SCHEDULE_PARTITION,
   siteGsi2Keys,
   siteKeys,
@@ -376,34 +378,65 @@ export class DynamoStore implements Store {
       diff: input.diff,
       finishedAt: input.finishedAt,
     });
-    const siteUpdate = buildUpdate({
-      lastDoneCrawlId: crawlId,
-      currentLlmsTxtKey: input.llmsTxtKey,
-      ...scheduleAttributes(host, input.nextRunAt),
-      updatedAt: nowIso(),
-    });
-    await this.doc.send(
-      new TransactWriteCommand({
-        TransactItems: [
-          {
-            Update: {
-              TableName: this.table,
-              Key: crawlKeys(host, crawlId),
-              ConditionExpression: `attribute_exists(${TABLE.partitionKey})`,
-              ...crawlUpdate,
-            },
-          },
-          {
-            Update: {
-              TableName: this.table,
-              Key: siteKeys(host),
-              ConditionExpression: `attribute_exists(${TABLE.partitionKey})`,
-              ...siteUpdate,
-            },
-          },
-        ],
-      }),
-    );
+    // The schedule comes from the site as saved now, not from the copy the crawl started with, and the condition makes that hold under a concurrent toggle.
+    for (let attempt = 1; ; attempt += 1) {
+      const site = await this.getSite(host);
+      if (!site) throw new NotFoundError(`Site not found: ${host}`);
+      const hours = site.config.scheduleHours;
+      const siteUpdate = buildUpdate({
+        lastDoneCrawlId: crawlId,
+        currentLlmsTxtKey: input.llmsTxtKey,
+        ...scheduleAttributes(
+          host,
+          nextRunAfter(site, new Date(input.finishedAt)),
+        ),
+        updatedAt: nowIso(),
+      });
+      try {
+        await this.doc.send(
+          new TransactWriteCommand({
+            TransactItems: [
+              {
+                Update: {
+                  TableName: this.table,
+                  Key: crawlKeys(host, crawlId),
+                  ConditionExpression: `attribute_exists(${TABLE.partitionKey})`,
+                  ...crawlUpdate,
+                },
+              },
+              {
+                Update: {
+                  TableName: this.table,
+                  Key: siteKeys(host),
+                  ConditionExpression:
+                    hours === undefined
+                      ? "attribute_not_exists(#config.#hours)"
+                      : "#config.#hours = :hours",
+                  ...siteUpdate,
+                  ExpressionAttributeNames: {
+                    ...siteUpdate.ExpressionAttributeNames,
+                    "#config": "config",
+                    "#hours": "scheduleHours",
+                  },
+                  ...(hours === undefined
+                    ? {}
+                    : {
+                        ExpressionAttributeValues: {
+                          ...siteUpdate.ExpressionAttributeValues,
+                          ":hours": hours,
+                        },
+                      }),
+                },
+              },
+            ],
+          }),
+        );
+        break;
+      } catch (error) {
+        if (attempt < FINISH_ATTEMPTS && scheduleChanged(error)) continue;
+        throw error;
+      }
+    }
     // Outside the transaction because a lease held by someone else must not fail the finish.
     await this.releaseLease(host, crawlId);
   }
@@ -545,6 +578,16 @@ function scheduleAttributes(host: string, nextRunAt: string | null) {
     };
   }
   return { nextRunAt, ...siteGsi2Keys(nextRunAt, host) };
+}
+
+const FINISH_ATTEMPTS = 3;
+
+/** Only the site item carries a value condition, so a cancelled second item means the monitoring toggle moved. */
+function scheduleChanged(error: unknown) {
+  return (
+    error instanceof TransactionCanceledException &&
+    error.CancellationReasons?.[1]?.Code === "ConditionalCheckFailed"
+  );
 }
 
 /** The exception carries the raw attribute map; the document client only unmarshalls successes. */

@@ -2,7 +2,6 @@ import type {
   CrawlJobMessage,
   FileStore,
   JobQueue,
-  Site,
   Store,
 } from "@llms-txt/core";
 import {
@@ -117,7 +116,6 @@ export async function runCrawlJob(
     snapshotKey: snapshotKey(host, message.crawlId),
     llmsTxtKey: currentKey,
     diff: result.snapshot.diff,
-    nextRunAt: nextRunAfter(site, finishedAt),
     finishedAt: finishedAt.toISOString(),
   });
   deps.log("crawl finished", { ...message, pages: result.snapshot.stats });
@@ -137,12 +135,6 @@ export async function fail(
     finishedAt: deps.now().toISOString(),
   });
   await deps.store.releaseLease(host, crawlId);
-}
-
-export function nextRunAfter(site: Site, from: Date) {
-  const hours = site.config.scheduleHours;
-  if (!hours) return null;
-  return new Date(from.getTime() + hours * 60 * 60 * 1000).toISOString();
 }
 
 export function errorMessage(error: unknown) {

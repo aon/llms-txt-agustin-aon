@@ -203,16 +203,18 @@ export function describeStoreContract(factory: () => Promise<Store>) {
   });
 
   describe("store contract: finishCrawl", () => {
-    it("marks the crawl done, points the site at the output, releases the lease and schedules", async () => {
+    it("marks the crawl done, points the site at the output, releases the lease and schedules from the saved interval", async () => {
       const store = await factory();
       await store.putSiteIfAbsent({ host: HOST, origin: `https://${HOST}` });
+      await store.updateSite(HOST, {
+        config: { pageCap: 10, maxDepth: 2, concurrency: 1, scheduleHours: 24 },
+      });
       await store.putCrawl(HOST, crawl("01A", { status: "running" }));
       await store.acquireLease(HOST, "01A", 100, 1000);
       await store.finishCrawl(HOST, "01A", {
         snapshotKey: "snap",
         llmsTxtKey: "file",
         diff: { added: 1, removed: 0, changed: 0, samples: ["/"] },
-        nextRunAt: "2026-09-12T00:00:00.000Z",
         finishedAt: "2026-09-11T00:10:00.000Z",
       });
       expect(await store.getCrawl(HOST, "01A")).toMatchObject({
@@ -226,12 +228,12 @@ export function describeStoreContract(factory: () => Promise<Store>) {
       expect(site).toMatchObject({
         lastDoneCrawlId: "01A",
         currentLlmsTxtKey: "file",
-        nextRunAt: "2026-09-12T00:00:00.000Z",
+        nextRunAt: "2026-09-12T00:10:00.000Z",
       });
       expect(site?.lease).toBeUndefined();
     });
 
-    it("clears the schedule when nextRunAt is null", async () => {
+    it("clears the schedule when monitoring was turned off after the crawl started", async () => {
       const store = await factory();
       await store.putSiteIfAbsent({ host: HOST, origin: `https://${HOST}` });
       await store.setSchedule(HOST, "2026-09-12T00:00:00.000Z");
@@ -240,7 +242,6 @@ export function describeStoreContract(factory: () => Promise<Store>) {
         snapshotKey: "s",
         llmsTxtKey: "f",
         diff: { added: 0, removed: 0, changed: 0, samples: [] },
-        nextRunAt: null,
         finishedAt: "2026-09-11T00:10:00.000Z",
       });
       expect((await store.getSite(HOST))?.nextRunAt).toBeUndefined();

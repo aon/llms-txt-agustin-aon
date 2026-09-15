@@ -1,5 +1,7 @@
 export * from "./defaults.js";
+export * from "./enqueue-crawl.js";
 export * from "./entities/index.js";
+export * from "./env.js";
 export * from "./hash.js";
 export * from "./humanize.js";
 export * from "./memory/index.js";

@@ -5,6 +5,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-line: var(--line);
+  --color-dim: var(--dim);
+  --color-ghost: var(--ghost);
+  --color-brand: var(--brand);
+  --color-warn: var(--warn);
+  --color-err: var(--err);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -46,15 +54,39 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --animate-spinner-fade: spinner-fade 1s linear infinite;
+
+  @keyframes spinner-fade {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0.15;
+    }
+  }
 }
 
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
+/* The ledger: one dark paper, graphite rules, colour only where a status needs it. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --paper: #000;
+  --ink: #ededed;
+  --line: #222;
+  --dim: #8a8a8a;
+  --ghost: #555;
+  --brand: #3569fa;
+  --warn: #d6a640;
+  --err: #e5484d;
+  color-scheme: dark;
+  scrollbar-color: var(--ghost) transparent;
+}
+
+:root {
+  --background: var(--paper);
+  --foreground: var(--ink);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);

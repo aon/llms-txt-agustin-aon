@@ -1,6 +1,5 @@
 import type { JobQueue, Store } from "@llms-txt/core";
-import { newCrawlId } from "@llms-txt/core";
-import { nextRunAfter } from "./job.js";
+import { enqueueCrawl, nextRunAfter } from "@llms-txt/core";
 
 export const SWEEP_LIMIT = 100;
 
@@ -20,27 +19,16 @@ export async function sweep(deps: MonitorDeps) {
   const now = deps.now();
   const due = await deps.store.listDueSites(now.toISOString(), SWEEP_LIMIT);
   for (const site of due) {
-    const crawlId = newCrawlId();
-    await deps.store.putCrawl(site.host, {
-      crawlId,
-      status: "queued",
-      reason: "scheduled",
-      phase: "discovery",
-      invocations: 0,
-      pagesQueued: 0,
-      pagesFetched: 0,
-      pagesFailed: 0,
-      pagesChanged: 0,
-      createdAt: now.toISOString(),
-    });
-    await deps.store.updateSite(site.host, { latestCrawlId: crawlId });
     await deps.store.setSchedule(site.host, nextRunAfter(site, now));
-    await deps.queue.enqueue({
-      siteId: site.host,
-      crawlId,
+    const crawl = await enqueueCrawl(deps, {
+      host: site.host,
       reason: "scheduled",
+      now,
     });
-    deps.log("scheduled crawl enqueued", { siteId: site.host, crawlId });
+    deps.log("scheduled crawl enqueued", {
+      siteId: site.host,
+      crawlId: crawl.crawlId,
+    });
   }
   return due.length;
 }

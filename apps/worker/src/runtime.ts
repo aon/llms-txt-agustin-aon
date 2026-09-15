@@ -5,10 +5,10 @@ import {
   SecretsManagerClient,
 } from "@aws-sdk/client-secrets-manager";
 import { SQSClient } from "@aws-sdk/client-sqs";
-import { TIMING } from "@llms-txt/core";
+import { requireEnv, TIMING } from "@llms-txt/core";
 import { DynamoStore, S3FileStore, SqsQueue } from "@llms-txt/core/aws";
 import { OpenRouterEnricher } from "@llms-txt/llms-txt";
-import { requireEnv, USER_AGENT, WORKER_ENV } from "./env.js";
+import { USER_AGENT, WORKER_ENV } from "./env.js";
 import type { JobDeps } from "./job.js";
 
 /** Built once per container; the enricher waits for its secret on first use. */

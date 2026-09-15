@@ -7,7 +7,6 @@ export interface FinishCrawlInput {
   snapshotKey: string;
   llmsTxtKey: string;
   diff: CrawlDiff;
-  nextRunAt: string | null;
   finishedAt: string;
 }
 

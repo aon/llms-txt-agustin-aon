@@ -3,11 +3,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-busy:opacity-100 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        brand: "bg-brand text-white hover:bg-brand/85",
         outline:
           "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
@@ -39,19 +40,56 @@ const buttonVariants = cva(
   },
 );
 
+/** A loading button shows the spinner, blocks clicks and stays focusable, so a pending submit neither dims nor drops keyboard focus. */
 function Button({
   className,
   variant = "default",
   size = "default",
+  loading = false,
+  disabled,
+  children,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonPrimitive.Props &
+  VariantProps<typeof buttonVariants> & { loading?: boolean }) {
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      disabled={disabled || loading}
+      focusableWhenDisabled={loading}
+      aria-busy={loading || undefined}
       {...props}
-    />
+    >
+      {loading && <Spinner />}
+      {children}
+    </ButtonPrimitive>
   );
 }
+
+/** Vercel's Geist spinner: the bars stay put and a fade runs around them, so nothing rotates. */
+function Spinner() {
+  return (
+    <span
+      data-icon="inline-start"
+      aria-hidden
+      className="relative inline-block size-3.5 shrink-0"
+    >
+      {SPINNER_BARS.map((bar) => (
+        <span
+          key={bar}
+          className="absolute top-1/2 left-1/2 h-[1.5px] w-1/4 -translate-x-1/2 -translate-y-1/2 animate-spinner-fade rounded-full bg-current"
+          style={{
+            transform: `rotate(${bar * (360 / SPINNER_BARS.length)}deg) translate(146%)`,
+            animationDuration: `${SPINNER_MS}ms`,
+            animationDelay: `${(bar - SPINNER_BARS.length + 1) * (SPINNER_MS / SPINNER_BARS.length)}ms`,
+          }}
+        />
+      ))}
+    </span>
+  );
+}
+
+const SPINNER_MS = 1000;
+const SPINNER_BARS = Array.from({ length: 10 }, (_, bar) => bar);
 
 export { Button, buttonVariants };
