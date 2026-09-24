@@ -40,5 +40,22 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.vue"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off"
+          }
+        },
+        "domains": {
+          "react": "none",
+          "next": "none"
+        }
+      }
+    }
+  ]
 }

@@ -237,6 +237,7 @@ Configuration lives in code: `TIMING` and `DEFAULT_SITE_CONFIG` in `packages/cor
 ```
 apps/web          Next.js app: submit, crawl view, site page, raw file route
 apps/worker       Lambda handlers: crawl-job, monitor, dead-letter; enqueue and status scripts
+apps/slides       Slidev deck walking through this README
 packages/core     entities, key builders, store interfaces, memory + AWS implementations
 packages/crawler  robots, sitemap, frontier, fetch, extract, classify, snapshot, CLI
 packages/llms-txt select, enrich (OpenRouter), render, parse

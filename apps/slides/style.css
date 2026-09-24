@@ -1,0 +1,455 @@
+/* The ledger: one dark paper, graphite rules, colour only where a status needs it. */
+:root {
+  --slidev-theme-primary: var(--brand);
+  --slidev-slide-container-background: var(--paper);
+  --slidev-controls-foreground: var(--dim);
+  --slidev-code-background: transparent;
+  --slidev-code-foreground: var(--ink);
+  --slidev-code-font-size: 12.5px;
+  --slidev-code-line-height: 1.6;
+  --slidev-code-padding: 0;
+  --slidev-code-radius: 0;
+  --slidev-code-margin: 0;
+  color-scheme: dark;
+  scrollbar-color: var(--ghost) transparent;
+}
+
+/* Slidev sizes #slide-content and nothing between it and the layout, so h-full
+   collapses to auto: nothing below the title can be centred or clamped. */
+#slideshow,
+.slidev-page {
+  height: 100%;
+}
+
+html,
+body,
+#slide-content {
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--brand) 30%, transparent);
+}
+
+:focus-visible {
+  outline: 1px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* The gutter is one value: the header rule, the headline and the body all start here. */
+.slidev-layout {
+  --gutter: 56px;
+  box-sizing: border-box;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  padding: 84px var(--gutter) 44px;
+  font-size: 20px;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.slidev-layout.cover {
+  padding: 0;
+}
+
+.slidev-layout h1 {
+  margin: 0 0 28px;
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.slidev-layout h2 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.slidev-layout p {
+  margin: 0 0 14px;
+  max-width: 68ch;
+}
+
+.slidev-layout strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.slidev-layout em {
+  font-style: normal;
+  color: var(--dim);
+}
+
+.slidev-layout a {
+  color: var(--brand);
+  text-decoration: none;
+  text-underline-offset: 4px;
+}
+
+.slidev-layout a:hover {
+  text-decoration: underline;
+}
+
+/* The list marker is the crawl's own fetched dot, at the size the canvas paints it. */
+.slidev-layout ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  max-width: 68ch;
+}
+
+.slidev-layout ul > li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.slidev-layout ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 3px;
+  height: 3px;
+  background: var(--ghost);
+}
+
+.slidev-layout ul > li > ul {
+  margin: 8px 0 0;
+}
+
+.slidev-layout ol {
+  list-style: none;
+  counter-reset: ledger;
+  padding: 0;
+  margin: 0 0 14px;
+  max-width: 68ch;
+}
+
+.slidev-layout ol > li {
+  position: relative;
+  counter-increment: ledger;
+  padding-left: 30px;
+  margin-bottom: 12px;
+}
+
+.slidev-layout ol > li::before {
+  content: counter(ledger);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  font-family: var(--slidev-font-mono, monospace);
+  font-size: 12px;
+  color: var(--ghost);
+}
+
+/* The ledger table: rules top and bottom, none between columns, data in mono. */
+.slidev-layout table {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--slidev-font-mono, monospace);
+  font-size: 15px;
+  margin: 0 0 16px;
+}
+
+.slidev-layout th {
+  padding: 9px 16px 9px 0;
+  text-align: left;
+  font-weight: 400;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.slidev-layout td {
+  padding: 9px 16px 9px 0;
+  vertical-align: top;
+  border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  line-height: 1.55;
+}
+
+.slidev-layout tr:first-child td {
+  border-top: 0;
+}
+
+.slidev-layout th:last-child,
+.slidev-layout td:last-child {
+  padding-right: 0;
+}
+
+.slidev-layout td code {
+  color: var(--ink);
+}
+
+/* Inline code is data, so it gets the mono chip the headline word wears. */
+.slidev-layout :not(pre) > code {
+  background: var(--line);
+  color: var(--ink);
+  padding: 0.1em 0.32em;
+  border-radius: 2px;
+  font-size: 0.88em;
+}
+
+.slidev-layout blockquote {
+  border: 0;
+  border-left: 1px solid var(--line);
+  background: transparent;
+  color: var(--dim);
+  padding: 2px 0 2px 16px;
+  border-radius: 0;
+  font-size: 15px;
+}
+
+.slidev-layout hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 20px 0;
+}
+
+/* The mono label the app uses for metadata, breadcrumbs and column heads. */
+.ledger-label {
+  font-family: var(--slidev-font-mono, monospace);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+}
+
+.ledger-rule {
+  border-top: 1px solid var(--line);
+}
+
+/* A queued dot that has not been fetched yet: the click target reads as pending. */
+.slidev-vclick-target {
+  transition:
+    opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slidev-vclick-hidden {
+  opacity: 0;
+  filter: blur(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slidev-vclick-target {
+    transition: none;
+  }
+  .slidev-vclick-hidden {
+    filter: none;
+  }
+}
+
+/* The landing's hero, at the landing's own measurements. */
+.slidev-layout.cover h1 {
+  margin: 0;
+  font-size: 48px;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.slidev-layout.cover .lead {
+  font-size: 18px;
+  color: var(--dim);
+  margin-bottom: 22px;
+}
+
+.slidev-layout.tight h1 {
+  margin-bottom: 16px;
+}
+
+/* The diagrams are white-paper exports: inverting lands their sheet exactly on the ledger's black. */
+.diagram {
+  position: relative;
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+.diagram svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.diagram image {
+  filter: invert(1) hue-rotate(180deg) saturate(0.8) brightness(0.95);
+}
+
+/* The focus: everything outside the region sinks into the paper, the region keeps its ink and gets a brand frame. */
+.diagram .veil {
+  fill: var(--paper);
+  opacity: 0;
+  transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.diagram .veil.on {
+  opacity: 0.78;
+}
+
+.diagram .hole,
+.diagram .frame {
+  transition:
+    x 500ms cubic-bezier(0.16, 1, 0.3, 1),
+    y 500ms cubic-bezier(0.16, 1, 0.3, 1),
+    width 500ms cubic-bezier(0.16, 1, 0.3, 1),
+    height 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.diagram .frame {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+/* The thumbnail: the system diagram kept in the corner, with the part under discussion lit. */
+.thumb {
+  position: absolute;
+  top: 58px;
+  right: var(--gutter, 56px);
+  z-index: 10;
+  width: 176px;
+  height: 106px;
+  display: flex;
+}
+
+.thumb .diagram .frame {
+  stroke-width: 1.5;
+}
+
+.thumb .diagram .veil.on {
+  opacity: 0.6;
+}
+
+/* A screenshot of the app is already on the ledger, so it only needs its rule. */
+.plate {
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.plate img {
+  display: block;
+  width: 100%;
+}
+
+/* The app's Block: a rule, a heading, the text under it. */
+.blocks > div {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.slidev-layout .blocks p {
+  margin-bottom: 0;
+  color: var(--dim);
+}
+
+/* The sample file is the slide's subject: it sits between two rules like the tree, dim
+   except for what the prose names, the site's identity and where its links lead. */
+.specimen {
+  width: fit-content;
+  max-width: 100%;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-top: 32px;
+  padding: 18px 0;
+  white-space: pre;
+  overflow-x: auto;
+  font-family: var(--slidev-font-mono, monospace);
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--dim);
+}
+
+.specimen b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* A file tree is data, not code: mono on the ledger, between two rules. */
+.tree {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 18px 0;
+  margin: 0 0 18px;
+  overflow-x: auto;
+  font-family: var(--slidev-font-mono, monospace);
+  font-size: 12.5px;
+  line-height: 1.85;
+  color: var(--ink);
+}
+
+.slidev-layout ol > li::before {
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.diagram,
+.plate {
+  margin: 0;
+}
+
+/* Steps on a rule, each marked by the brand dot; used by the app routes and the per-page crawl. */
+.slidev-layout ol.timeline {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  width: 100%;
+  max-width: none;
+  gap: 0;
+  margin: 56px 0 0;
+  padding: 0;
+  counter-reset: none;
+}
+
+.slidev-layout ol.timeline > li {
+  position: relative;
+  margin: 0;
+  padding: 22px 24px 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.slidev-layout ol.timeline > li::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.slidev-layout .timeline code {
+  display: inline-block;
+  margin: 8px 0 16px;
+  font-size: 13px;
+}
+
+.slidev-layout .timeline p {
+  margin: 0 0 6px;
+}
+
+.slidev-layout .timeline p:first-of-type {
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+
+.slidev-layout .timeline .dim {
+  font-size: 16px;
+  color: var(--dim);
+}
